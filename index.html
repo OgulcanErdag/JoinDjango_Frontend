@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join</title>
+    <link rel="icon" href="../img/logo.svg">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="./css/fonts.css">
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+</head>
+
+<body>
+    <div class="starting-screen" id="startingScreen"><img id="responsive-image" src="./img/Capa 2.png"
+            alt="Responsive Image" alt=""></div>
+    <div class="signup-conteiner">
+        <div>
+            <p>Not A Join User?</p>
+            <button class="btn pdng1516 signup-button" id="signupButton">Sign up</button>
+        </div>
+    </div>
+    <div class="content">
+        <div class="login-window">
+            <div class="h1-blueline">
+                <h1>Log in</h1>
+                <div class="blue-underline"></div>
+            </div>
+            <form class="login-form" id="signinForm">
+                <div class="input-fields">
+                    <div class="input-conteiner"><input placeholder="Email" class="login-input" type="email"
+                            id="loginEmail"><img class="mail-img" src="./img/mail.png" alt=""></div>
+                    <div class="input-conteiner" id="pasowrdConteiner"><input placeholder="Password"
+                            onclick="changeImage()" class="login-input" type="password" id="loginPassword">
+                        <div class="password-image-conteiner"><img class="password-img" src="./img/lock.png" id="toggle_button" onclick="toggle()"
+                                alt=""></div>
+                    </div>
+                    <div class="wrong-password" id="wrongPasswordConteiner"></div>
+                </div>
+
+                <div class="checkbox-conteiner">
+                    <div class="check-box">
+                        <img id="checkbox" src="img/Rectangle1.png">
+                    </div>
+                    <div>
+                        <p>Remember me</p>
+                    </div>
+
+                </div>
+                <div class="login-buttons-conteiner">
+                    <button class="btn pdng1524 heigt48 btn-bck-hover" type="submit" id="signinButton">Log in</button>
+                    <button class="btn-gst pdng1524 font-inter heigt48" id="guestLoginButton">Guest Log in</button>
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+    <div class="links-conteiner">
+        <a href="./privacy_policy_nologin.html">Privacy Policy</a>
+        <a href="./legal_notice_nologin.html">Legal notice</a>
+    </div>
+</body>
+<script src="./js/toggle.js"></script>
+<script src="./js/start_img.js"></script>
+<script type="module" src="js/login.js"></script>
+<script src="script.js"></script>
+
+
+
+</html>

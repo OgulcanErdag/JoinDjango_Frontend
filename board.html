@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Board</title>
+    <link rel="icon" href="../img/logo.svg">
+
+    <link rel="stylesheet" href="css/fonts.css">
+    <link rel="stylesheet" href="css/desktop_template.css">
+    <link rel="stylesheet" href="css/board.css">
+    <link rel="stylesheet" href="css/contacts.css">
+    <link rel="stylesheet" href="css/add_task.css">
+</head>
+
+<body onload="boardInit()">
+
+    <header>
+        <div class="header-content">
+            <img onclick="goToSummary()" style="cursor: pointer" class="d-none" src="img/logo-dark.png" alt="">
+            <p>Kanban Project Management Tool</p>
+            <div class="header-icons">
+                <img onclick="goToHelp()" id="link-help" class="header-help" src="../img/help.svg" alt="questionmark" />
+                <div id="user-logo" onclick="toggleMenu()" class="header-user-name"></div>
+            </div>
+        </div>
+    </header>
+
+    <div class="user-content" id="user-content">
+        <a onclick="goToLegalNotice()" href="#">Legal Notice</a>
+        <a onclick="goToPrivacyPolicy()" href="#">Privacy Policy</a>
+        <a onclick="logOut()" href="index.html">Log Out</a>
+    </div>
+
+
+    <div class="sidebar">
+        <img onclick="goToSummary()" src="../img/logo.svg" alt="" class="sidebar-logo" />
+        <div class="sidebar-menu">
+            <a href="#" class="sidebar-links" onclick="goToSummary()" id="link-summary">
+                <img src="../img/sidebar_summary.svg" alt="" />Summary
+            </a>
+            <a href="#" class="sidebar-links" onclick="goToTask()" id="link-task">
+                <img src="../img/edit_square.svg" alt="" />Add Task
+            </a>
+            <a href="#" class="sidebar-links" onclick="goToBoard()" id="link-board">
+                <img src="../img/sidebar_board.svg" alt="" />Board
+            </a>
+            <a href="#" class="sidebar-links" onclick="goToContacts()" id="link-contacts">
+                <img src="../img/sidebar_contacts.svg" alt="" />Contacts
+            </a>
+        </div>
+        <div class="sidebar-menu-bottom">
+            <a id="link-privacy-policy" onclick="goToPrivacyPolicy()" href="#">Privacy Policy</a>
+            <a id="link-legal-notice" onclick="goToLegalNotice()" href="#">Legal Notice</a>
+        </div>
+
+    </div>
+
+    <div class="board-content" id="board-content">
+        <div class="board-firstrow">
+            <h1>Board</h1>
+            <div class="board-firstrow-right">
+                <div id="input-container-find">
+                    <input placeholder="Find Task" id="find-task" required type="text" oninput="findTask()"
+                        pattern="^[A-Za-z]+ [A-Za-z]+.*$" title="Please enter at least a first name and a last name">
+                    <div class="find-line"></div>
+                    <img class="icon px32" src="img/search.svg" alt="user icon">
+                </div>
+
+                <button onclick="openAddTask('to-do')" class="button-dark button-dark-board" type="submit">
+                    <p>Add task</p><img class="px18" src="/img/plus_white.svg" alt="">
+                </button>
+            </div>
+        </div>
+        <div id="input-container-find2" class="d-none">
+            <input placeholder="Find Task" id="find-task2" required type="text" onkeydown="findTaskMobile()"
+                pattern="^[A-Za-z]+ [A-Za-z]+.*$" title="Please enter at least a first name and a last name">
+            <div class="find-line"></div>
+            <img class="icon px32" src="img/search.svg" alt="user icon">
+        </div>
+
+        <div class="board-splits">
+            <div class="board-split">
+                <div class="split-headline">
+                    <p>To do</p>
+                    <img class="add-task-board-category" onclick="openAddTask('to-do')" src="img/plus_bordered.svg"
+                        alt="">
+                </div>
+                <div class="task-area" id="to-do" ondrop="drop(event, 'to-do')" ondragover="allowDrop(event)"
+                    ondragleave="resetBackground(event)">
+
+                </div>
+            </div>
+            <div class="board-split">
+                <div class="split-headline">
+                    <p>In progress</p>
+                    <img class="add-task-board-category" onclick="openAddTask('in-progress')"
+                        src="img/plus_bordered.svg" alt="">
+                </div>
+                <div class="task-area" id="in-progress" ondrop="drop(event, 'in-progress')"
+                    ondragover="allowDrop(event)" ondragleave="resetBackground(event)">
+                </div>
+
+            </div>
+            <div class="board-split">
+                <div class="split-headline">
+                    <p>Await feedback</p>
+                    <img class="add-task-board-category" onclick="openAddTask('await-feedback')"
+                        src="img/plus_bordered.svg" alt="">
+                </div>
+                <div class="task-area" id="await-feedback" ondrop="drop(event, 'await-feedback')"
+                    ondragover="allowDrop(event)" ondragleave="resetBackground(event)">
+                </div>
+            </div>
+            <div class=" board-split">
+                <div class="split-headline">
+                    <p>Done</p>
+                </div>
+                <div class="task-area" id="done" ondrop="drop(event, 'done')" ondragover="allowDrop(event)"
+                    ondragleave="resetBackground(event)">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SHOW TASK LAYER -->
+
+    <div class="add-contact-layer d-none" id="show-task-layer">
+        <div class="show-task-inner-layer" id="show-task-inner-layer">
+
+        </div>
+    </div>
+
+    <script src="js/getHTML.js"></script>
+    <script src="/js/board.js"></script>
+    <script src="/js/board_layer.js"></script>
+    <script src="/js/board_edit_layer.js"></script>
+    <script src="js/add_task.js"></script>
+    <script src="js/add_task_subtasks.js"></script>
+    <script src="js/add_task_contacts.js"></script>
+    <script src="js/contacts.js"></script>
+    <script src="script.js"></script>
+
+
+</body>
+
+</html>

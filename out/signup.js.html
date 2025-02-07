@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: signup.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: signup.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// Import the functions you need from the SDKs you need
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyBLwkvdC-k--cb_0Z5y83ZEtcbRiXMxxKE",
+    authDomain: "join-23123.firebaseapp.com",
+    databaseURL: "https://join-database-3d39f-default-rtdb.europe-west1.firebasedatabase.app/",
+    projectId: "join-23123",
+    storageBucket: "join-23123.appspot.com",
+    messagingSenderId: "801789402962",
+    appId: "1:801789402962:web:d84538bda53119e058e48b",
+    measurementId: "G-CFY9BZ9NV5"
+  };
+
+  function navigateBack() {
+    window.location.href = 'index.html';
+}
+
+// Add the event listener for the arrow container
+document.getElementById('backArrow').addEventListener('click', navigateBack);
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+const database = getDatabase(app);
+
+document.addEventListener('DOMContentLoaded', init);
+
+/**
+ * Initializes the signup form and its elements.
+ */
+function init() {
+    const signupForm = document.getElementById('signupForm');
+    const signupButton = document.getElementById('signupButton');
+    const acceptPolicyImage = document.getElementById('acceptPolicy');
+ 
+    if (signupForm &amp;&amp; signupButton &amp;&amp; acceptPolicyImage) {
+        setupFormSubmission(signupForm);
+    } else {
+        console.error('One or more elements not found in the DOM');       
+    }
+}
+
+/**
+ * Toggles the checkbox image and enables/disables the signup button.
+ */
+function toggleCheckboxImage() {
+    const image = document.getElementById('acceptPolicy');
+    const signupButton = document.getElementById('signupButton');
+
+    if (image.src.includes('Rectangle1.png')) {
+        image.src = 'img/Rectangle2.png';
+        signupButton.disabled = false;
+    } else {
+        image.src = 'img/Rectangle1.png';
+        signupButton.disabled = true;        
+    }
+}
+
+/**
+ * Sets up the form submission event listener.
+ * @param {HTMLFormElement} form - The signup form element.
+ */
+function setupFormSubmission(form) {
+
+    form.addEventListener('submit', handleFormSubmit);
+
+
+}
+
+/**
+ * Handles the form submission event.
+ * @param {Event} event - The form submission event.
+ */
+function handleFormSubmit(event) {
+    event.preventDefault();
+  
+    
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    if (!validateName(name)) {
+        alert('Please enter both your first and last name.');
+        return;
+    }
+
+    if (!validateEmail(email)) {
+        alert('Please enter a valid email address.');
+        return;
+    }
+
+    if (password !== confirmPassword) {
+
+        document.getElementById('wrongPasswordConteiner').innerHTML = `Your Passwords don't match. Try
+         again.`
+        document.getElementById('confirm-conteiner').classList.add('signup-red')
+       // alert('Passwords do not match!');
+       return;
+    }
+  
+
+    signupUser(name, email, password);
+}
+
+/**
+ * Validates the name to ensure it contains at least a first and last name.
+ * @param {string} name - The name to validate.
+ * @returns {boolean} True if the name is valid, false otherwise.
+ */
+function validateName(name) {
+    const nameParts = name.split(' ');
+    return nameParts.length >= 2 &amp;&amp; nameParts[0] &amp;&amp; nameParts[1];
+}
+
+/**
+ * Validates the email format.
+ * @param {string} email - The email to validate.
+ * @returns {boolean} True if the email is valid, false otherwise.
+ */
+function validateEmail(email) {
+    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    return emailPattern.test(email);
+}
+
+/**
+ * Signs up the user by pushing their data to the Firebase Realtime Database.
+ * @param {string} name - The user's name.
+ * @param {string} email - The user's email address.
+ * @param {string} password - The user's password.
+ */
+function signupUser(name, email, password) {
+    const usersRef = ref(database, 'users');
+    push(usersRef, {
+        name: name,
+        email: email,
+        password: password
+    })
+    .then(() => {
+        //alert('Signup successful!');
+        signupSuccessfully()
+    })
+    .catch((error) => {
+        console.error('Error pushing data to Firebase: ', error);
+        alert('Error signing up, please try again.');
+    });
+}
+
+function signupSuccessfully() {
+    // Simulate signup success
+    const successMessage = document.getElementById('successMessage');
+    successMessage.classList.add('show');
+  
+    // Hide the message after 3 seconds
+    setTimeout(function() {
+      successMessage.classList.remove('show');
+      window.location.href = 'index.html';
+    }, 3000);
+  };
+
+// Attach the function to the window object to make it globally accessible
+window.toggleCheckboxImage = toggleCheckboxImage;
+
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#handleFormSubmit">handleFormSubmit</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#setupFormSubmission">setupFormSubmission</a></li><li><a href="global.html#signupUser">signupUser</a></li><li><a href="global.html#toggleCheckboxImage">toggleCheckboxImage</a></li><li><a href="global.html#validateEmail">validateEmail</a></li><li><a href="global.html#validateName">validateName</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Thu Jul 25 2024 12:16:53 GMT+0200 (Mitteleuropäische Sommerzeit)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: add_task.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: add_task.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>let subtasks = [];
+let selectedContacts = [];
+let currentTaskIndex = 0;
+
+//window.onload = futureDate;
+
+const contactDropdown = document.getElementById("add-task-contacts");
+const categoryDropdown = document.getElementById("category");
+
+/**
+ * Highlights the medium priority button and updates its image.
+ */
+function standardButton() {
+  document.getElementById("mediumButton").classList.add("selected-medium-button");
+  document.getElementById("mediumButtonImg").src = "../add_task_img/medium-white.svg";
+}
+
+/**
+ * Highlights the high priority button, updates its image,
+ * and resets the medium and low priority buttons.
+ */
+function highButton() {
+  document.getElementById("highButton").classList.add("selected-high-button");
+  document.getElementById("highButtonImg").src = "../add_task_img/high-white.svg";
+
+  document.getElementById("mediumButton").classList.remove("selected-medium-button");
+  document.getElementById("mediumButtonImg").src = "../add_task_img/medium.svg";
+
+  document.getElementById("lowButton").classList.remove("selected-low-button");
+  document.getElementById("lowButtonImg").src = "../add_task_img/low.svg";
+}
+
+/**
+ * Highlights the medium priority button, updates its image,
+ * and resets the high and low priority buttons.
+ */
+function mediumButton() {
+  document.getElementById("mediumButton").classList.add("selected-medium-button");
+  document.getElementById("mediumButtonImg").src = "../add_task_img/medium-white.svg";
+
+  document.getElementById("highButton").classList.remove("selected-high-button");
+  document.getElementById("highButtonImg").src = "../add_task_img/high.svg";
+
+  document.getElementById("lowButton").classList.remove("selected-low-button");
+  document.getElementById("lowButtonImg").src = "../add_task_img/low.svg";
+}
+
+/**
+ * Highlights the low priority button, updates its image,
+ * and resets the high and medium priority buttons.
+ */
+function lowButton() {
+  document.getElementById("lowButton").classList.add("selected-low-button");
+  document.getElementById("lowButtonImg").src = "../add_task_img/low-white.svg";
+
+  document.getElementById("mediumButton").classList.remove("selected-medium-button");
+  document.getElementById("mediumButtonImg").src = "../add_task_img/medium.svg";
+
+  document.getElementById("highButton").classList.remove("selected-high-button");
+  document.getElementById("highButtonImg").src = "../add_task_img/high.svg";
+}
+
+/**
+ * Toggles the visibility of the category dropdown and initializes its content.
+ */
+function category() {
+  let categoryDropdown = document.getElementById("category");
+  categoryDropdown.classList.toggle("d-none");
+
+  document.getElementById("category").innerHTML = `&lt;div class="category-options">
+  &lt;span onclick="technicalTask()">Technical Task&lt;/span>
+  &lt;span onclick="userStory()">User Story&lt;/span>
+  &lt;/div>`;
+  emptyCategory();
+}
+
+/**
+ * Sets the task category to "Technical Task" and hides the category dropdown.
+ */
+function technicalTask() {
+  let category = document.getElementById("category");
+  document.getElementById("task-category").innerHTML = "Technical Task";
+  category.classList.add("d-none");
+  category.innerHTML = "";
+  emptyCategory();
+}
+
+/**
+ * Sets the task category to "User Story" and hides the category dropdown.
+ */
+function userStory() {
+  let category = document.getElementById("category");
+  document.getElementById("task-category").innerHTML = "User Story";
+  category.classList.add("d-none");
+  category.innerHTML = "";
+  emptyCategory();
+}
+
+/**
+ * Updates the style of the date input field based on its value.
+ */
+function updateDateStyle() {
+  let date = document.getElementById("date-input");
+  let required = document.getElementById("date-required");
+
+  if (date.value.length === 0) {
+    document.getElementById("date-input").style.color = "#d1d1d1";
+    date.style.borderColor = "red";
+    required.innerHTML = `&lt;div class="title-required">this field is required&lt;/div>`;
+  } else if (date.value.length > 0) {
+    document.getElementById("date-input").style.color = "black";
+    date.style.borderColor = "#29abe2";
+    required.innerHTML = "";
+  }
+}
+
+/**
+ * Sets up the subtask input field to create a new subtask on Enter key press,
+ * hides the plus icon, and shows the close subtask option.
+ */
+function newSubtask() {
+  document.getElementById("subtask-field").addEventListener("keydown", function (press) {
+    if (press.key === "Enter") {
+      createSubtask();
+    }
+  });
+
+  let subtaskPlus = document.getElementById("subtask-plus");
+  subtaskPlus.classList.add("d-none");
+
+  let closeSubtask = document.getElementById("edit-subtask");
+  closeSubtask.classList.remove("d-none");
+
+  document.getElementById("edit-subtask").innerHTML = newSubtaskHTML();
+}
+
+/**
+ * Resets the subtask input field and updates the UI to hide the close subtask option.
+ */
+function closeSubtask() {
+  let input = document.getElementById("subtask-field");
+  input.value = "";
+  let subtaskPlus = document.getElementById("subtask-plus");
+  subtaskPlus.classList.remove("d-none");
+
+  let closeSubtask = document.getElementById("edit-subtask");
+  closeSubtask.classList.add("d-none");
+}
+
+/**
+ * Creates a new subtask and updates the subtask list UI.
+ */
+function createSubtask() {
+  let input = document.getElementById("subtask-field");
+
+  if (input.value.trim() === "") {
+    return;
+  }
+
+  subtasks.push({ title: input.value, completed: false });
+
+  let createSubtask = document.getElementById("create-subtask");
+  createSubtask.innerHTML = "";
+
+  for (let i = 0; i &lt; subtasks.length; i++) {
+    let subtask = subtasks[i];
+    if (input.value != "") {
+      createSubtask.innerHTML += createSubtaskHTML(i, subtask);
+    }
+  }
+  input.value = "";
+}
+
+/**
+ * Renders the list of subtasks in the UI.
+ */
+function renderSubtasks() {
+  let createSubtask = document.getElementById("create-subtask");
+  createSubtask.innerHTML = "";
+
+  for (let i = 0; i &lt; subtasks.length; i++) {
+    let subtask = subtasks[i];
+    createSubtask.innerHTML += renderSubtasksHTML(i, subtask);
+  }
+}
+
+/**
+ * Changes the subtask layer to the edit state for a specific subtask.
+ * @param {number} i - The index of the subtask to edit.
+ */
+function changeSubtaskLayer(i) {
+  document.getElementById(`subtask-tasks${i}`).classList.remove("subtask-tasks");
+  document.getElementById(`subtask-tasks${i}`).classList.remove("subtask-tasks:hover");
+  document.getElementById(`subtask-tasks${i}`).classList.add("subtask-tasks-edit");
+}
+
+/**
+ * Changes the subtask content to an editable state for a specific subtask.
+ * @param {number} i - The index of the subtask to edit.
+ */
+function changeSubtask(i) {
+  let editLogo = document.getElementById(`edit-logo${i}`);
+  let editedSubtask = document.getElementById(`subtask-${i}`).innerText;
+  let required = document.getElementById("subtask-required");
+  let redBorder = document.getElementById(`subtask-tasks${i}`);
+  editLogo.src = "add_task_img/check.svg";
+
+  if (editedSubtask === "") {
+    required.innerHTML = "";
+    redBorder.style.borderBottom = "1px solid #29abe2";
+  }
+
+  changeSubtaskLayer(i);
+  let createSubtask = document.getElementById(`subtask-${i}`);
+  let currentText = subtasks[i].title;
+
+  createSubtask.innerHTML = `
+    &lt;div class="subtask-edit">
+      &lt;div contenteditable="true" id="subtask-${i}" class="subtask-edit-div">${currentText}&lt;/div>
+    &lt;/div>
+  `;
+}
+
+/**
+ * Determines whether to update or change the subtask based on the current state.
+ * @param {number} i - The index of the subtask to check.
+ */
+function whichSourceSubtask(i) {
+  let editLogo = document.getElementById(`edit-logo${i}`);
+  if (editLogo.src.endsWith("add_task_img/check.svg")) {
+    updateSubtask(i);
+  } else {
+    changeSubtask(i);
+  }
+}
+
+/**
+ * Updates the subtask layer to the default state for a specific subtask.
+ * @param {number} i - The index of the subtask to update.
+ */
+function updateSubtaskLayer(i) {
+  document.getElementById(`subtask-tasks${i}`).classList.add("subtask-tasks");
+  document.getElementById(`subtask-tasks${i}`).classList.add("subtask-tasks:hover");
+  document.getElementById(`subtask-tasks${i}`).classList.remove("subtask-tasks-edit");
+}
+
+/**
+ * Updates the content of a specific subtask.
+ * @param {number} i - The index of the subtask to update.
+ */
+function updateSubtask(i) {
+  let editedSubtask = document.getElementById(`subtask-${i}`).innerText;
+  let editSubtask = editedSubtask.trim();
+  let required = document.getElementById("subtask-required");
+  let redBorder = document.getElementById(`subtask-tasks${i}`);
+  if (editSubtask === "") {
+    required.innerHTML = `&lt;div class="title-required">fill out subtask&lt;/div>`;
+    redBorder.style.borderBottom = "1px solid #ff8190";
+  }
+  updateSubtaskLayer(i);
+  subtasks[i].title = editedSubtask;
+
+  let createSubtask = document.getElementById(`subtask-${i}`);
+  createSubtask.innerHTML = `${editedSubtask}`;
+
+  let editLogo = document.getElementById(`edit-logo${i}`);
+  editLogo.src = "add_task_img/edit.svg";
+}
+
+/**
+ * Deletes a subtask from the subtasks array and re-renders the subtasks.
+ * @param {number} i - Index of the subtask to be deleted.
+ */
+function deleteSubtask(i) {
+  subtasks.splice(i, 1);
+  renderSubtasks();
+}
+
+/**
+ * Resets the selected contacts array to all false values.
+ */
+function resetSelectedContacts() {
+  selectedContacts = new Array(contactsArray.length).fill(false);
+}
+
+/**
+ * Displays the contacts in the add task section.
+ */
+function showContactsInAddTask() {
+  let userName = sessionStorage.getItem("userName");
+
+  let contactsAddTask = contactsArray
+    .map((contact, i) => {
+      let checkboxSrc = selectedContacts[i] ? "add_task_img/checkbox-normal-checked.svg" : "add_task_img/checkbox-normal.svg";
+
+      let displayName = contact.name;
+      if (contact.name === userName) {
+        displayName += " (You)";
+      }
+      return `&lt;div id="contacts-pos${i}" onclick="checkContacts(${i})" class="contacts-pos">
+              &lt;div class="show-task-contact-add-task">
+                  &lt;div class="show-task-contact-letters" style="background-color: ${contact.color};">${getInitials(contact.name)}&lt;/div>
+                  &lt;p>${displayName}&lt;/p>
+              &lt;/div>
+              &lt;div class="checkbox">
+                  &lt;img id="checkbox-field${i}" src="${checkboxSrc}" alt="">
+              &lt;/div>
+          &lt;/div>`;
+    })
+    .join("");
+
+  let content = document.getElementById("add-task-contacts");
+  content.innerHTML = contactsAddTask;
+
+  contactsArray.forEach((contact, i) => {
+    let checkboxField = document.getElementById(`checkbox-field${i}`);
+    let contactDiv = document.getElementById(`contacts-pos${i}`);
+
+    if (checkboxField.src.includes("checkbox-normal-checked.svg")) {
+      checkboxField.src = "add_task_img/checkbox-normal-checked-white.svg";
+      contactDiv.classList.add("contacts-pos-highlight");
+    }
+  });
+}
+
+/**
+ * Initializes the add task process by fetching necessary data and setting up the interface.
+ */
+async function initializeAddTask() {
+  await fetchDataJson();
+  generateInitials();
+  standardButton();
+}
+
+/**
+ * Toggles the display of the contacts dropdown and shows the contacts in the add task section.
+ */
+function showContacts() {
+  let contactDropdown = document.querySelector("#add-task-contacts");
+  let categoryDropdown = document.querySelector("#category");
+  contactDropdown.classList.toggle("d-none");
+  showContactsInAddTask();
+}
+document.addEventListener("DOMContentLoaded", function () {
+  addMouseDownListeners();
+});
+
+/**
+ * Adds event listeners for mouse down events to handle dropdown visibility.
+ */
+async function addMouseDownListeners() {
+  document.addEventListener("mousedown", async function (event) {
+    const contactDropdown = document.querySelector("#add-task-contacts");
+    const categoryDropdown = document.querySelector("#category");
+
+    if (contactDropdown &amp;&amp; !contactDropdown.contains(event.target) &amp;&amp; !event.target.matches(".select-contact")) {
+      await closeContactDropdown(contactDropdown);
+    }
+
+    if (categoryDropdown &amp;&amp; !categoryDropdown.contains(event.target) &amp;&amp; !event.target.matches(".select-contact")) {
+      if (!categoryDropdown.classList.contains("d-none")) {
+        categoryDropdown.classList.add("d-none");
+      }
+    }
+  });
+}
+
+/**
+ * Closes the contact dropdown and performs necessary updates based on the current state.
+ * @param {HTMLElement} contactDropdown - The contact dropdown element to be closed.
+ */
+async function closeContactDropdown(contactDropdown) {
+  if (!contactDropdown.classList.contains("d-none")) {
+    contactDropdown.classList.add("d-none");
+
+    if (document.getElementById("add-task-contactsHTML")) {
+      await getAddContactSiteHTML(selectedContacts);
+      standardButton();
+    } else {
+      if (document.getElementById("add-task-contactsHTML-layer")) {
+        showContactsInAddTaskLayer();
+        document.getElementById("req-text-layer").classList.add("mt10");
+      } else {
+        await saveEditContacts(currentTaskKey);
+      }
+    }
+  }
+}
+
+/**
+ * Displays the contacts in the add task layer.
+ */
+function showContactsInAddTaskLayer() {
+  let contactsHTML = getAddContactsHTML(selectedContacts);
+  let content = document.getElementById("show-task-inner-layer");
+  let tempDiv = document.createElement("div");
+  tempDiv.innerHTML = contactsHTML;
+
+  let addTaskLayer = generateAddTaskLayer(currentBoardCategory, contactsHTML);
+  let parser = new DOMParser();
+  let doc = parser.parseFromString(addTaskLayer, "text/html");
+  let newContent = doc.getElementById("add-task-contactsHTML-layer").innerHTML;
+
+  content.querySelector("#add-task-contactsHTML-layer").innerHTML = newContent;
+
+  standardButton();
+}
+
+/**
+ * Shows the contacts in the edit task section by reusing the add task contact display function.
+ */
+function showContactsInEdit() {
+  showContactsInAddTask();
+  contactDropdown.classList.toggle("d-none");
+}
+
+/**
+ * Toggles the selection of a contact.
+ * @param {number} i - Index of the contact to be checked.
+ */
+function checkContacts(i) {
+  let checkboxField = document.getElementById(`checkbox-field${i}`);
+  let contactDiv = document.getElementById(`contacts-pos${i}`);
+
+  if (checkboxField.src.includes("checkbox-normal.svg")) {
+    checkboxField.src = "add_task_img/checkbox-normal-checked-white.svg";
+    contactDiv.classList.add("contacts-pos-highlight");
+    selectedContacts[i] = true;
+  } else {
+    checkboxField.src = "add_task_img/checkbox-normal.svg";
+    contactDiv.classList.remove("contacts-pos-highlight");
+    contactDiv.classList.remove("no-hover");
+    selectedContacts[i] = false;
+  }
+}
+
+/**
+ * Clears the selected contacts and resets the contact checkboxes in the add task section.
+ */
+function clearContacts() {
+  let content = document.getElementById("add-task-contactsHTML");
+  if (!content) {
+    content = document.getElementById("add-task-contactsHTML-layer");
+  }
+
+  for (let i in selectedContacts) {
+    if (selectedContacts.hasOwnProperty(i) &amp;&amp; selectedContacts[i]) {
+      let checkboxField = document.getElementById(`checkbox-field${i}`);
+      let contactDiv = document.getElementById(`contacts-pos${i}`);
+
+      checkboxField.src = "add_task_img/checkbox-normal.svg";
+      contactDiv.classList.remove("contacts-pos-highlight");
+      contactDiv.classList.remove("no-hover");
+      selectedContacts[i] = false;
+    }
+  }
+
+  content.innerHTML = "";
+}
+
+/**
+ * Clears the task input fields and resets the interface.
+ */
+function clearTask() {
+  let description = document.getElementById("description-input");
+  description.value = "";
+
+  let dueDate = document.getElementById("date-input");
+  dueDate.value = "";
+  dueDate.style.color = "#d1d1d1";
+
+  document.getElementById("add-task-contacts").classList.add("d-none");
+
+  clearButtons();
+  clearSubtasks();
+  clearContacts();
+
+  let taskCategory = document.getElementById("task-category");
+  taskCategory.innerText = "Select task category";
+
+  let title = document.getElementById("title-input");
+  title.value = "";
+}
+
+/**
+ * Clears the selection state of priority buttons.
+ */
+function clearButtons() {
+  document.getElementById("mediumButton").classList.remove("selected-medium-button");
+  document.getElementById("mediumButtonImg").src = "../add_task_img/medium.svg";
+
+  document.getElementById("highButton").classList.remove("selected-high-button");
+  document.getElementById("highButtonImg").src = "../add_task_img/high.svg";
+
+  document.getElementById("lowButton").classList.remove("selected-low-button");
+  document.getElementById("lowButtonImg").src = "../add_task_img/low.svg";
+}
+
+/**
+ * Clears the subtasks array and re-renders the subtasks.
+ */
+function clearSubtasks() {
+  subtasks = [];
+  renderSubtasks();
+  standardButton();
+}
+
+/**
+ * Validates if the task category is selected and displays an error if not.
+ */
+function emptyCategory() {
+  let taskCategoryInput = document.getElementById("category-input");
+  let taskCategory = document.getElementById("task-category").innerText;
+  let required = document.getElementById("category-required");
+  if (taskCategory === "Select task category") {
+    //   taskCategoryInput.style.borderColor = "red";
+    //   required.innerHTML = `&lt;div class="title-required">this field is required&lt;/div>`;
+  } else if (taskCategory === "User Story" || taskCategory === "Technical Task") {
+    taskCategoryInput.style.borderColor = "#29abe2";
+    required.innerHTML = "";
+  }
+}
+
+function emptyCategoryRequired() {
+  let taskCategoryInput = document.getElementById("category-input");
+  let taskCategory = document.getElementById("task-category").innerText;
+  let required = document.getElementById("category-required");
+  if (taskCategory === "Select task category") {
+    taskCategoryInput.style.borderColor = "red";
+    required.innerHTML = `&lt;div class="title-required">this field is required&lt;/div>`;
+  }
+}
+
+/**
+ * Validates if the title is provided and displays an error if not.
+ */
+function emptyTitle() {
+  let title = document.getElementById("title-input");
+  let required = document.getElementById("title-required");
+
+  if (title.value.length === 0) {
+    title.style.borderColor = "red";
+    required.innerHTML = `&lt;div class="title-required">this field is required&lt;/div>`;
+  } else if (title.value.length > 0) {
+    title.style.borderColor = "#29abe2";
+    required.innerHTML = "";
+  }
+}
+
+/**
+ * Sets the minimum date of the input field with the ID 'date-input' to today's date.
+ * This ensures that the user can only select dates that are today or in the future.
+ */
+function futureDate() {
+  let today = new Date().toISOString().split("T")[0];
+  document.getElementById("date-input").setAttribute("min", today);
+}
+
+/**
+ * Displays the date picker and updates the date input style.
+ */
+function emptyDate() {
+  futureDate();
+  let date = document.getElementById("date-input");
+  date.showPicker();
+  updateDateStyle();
+  document.getElementById("date-input").addEventListener("change", updateDateStyle);
+}
+
+/**
+ * Animates the "Added to board" message and resolves the promise when the animation ends.
+ * @returns {Promise} - A promise that resolves when the animation ends.
+ */
+function addedToBoard() {
+  return new Promise((resolve) => {
+    let imgContainer = document.getElementById("added-to-board");
+    imgContainer.classList.add("animate");
+
+    imgContainer.addEventListener("transitionend", function handler() {
+      imgContainer.removeEventListener("transitionend", handler);
+      resolve();
+    });
+  });
+}
+
+/**
+ * Creates a new task and posts it to the board.
+ * @param {string} boardCategory - The category of the board where the task will be added.
+ */
+async function createTask(boardCategory) {
+  let description = document.getElementById("description-input").value;
+  let dueDate = document.getElementById("date-input").value;
+  let prio = getSelectedPrio();
+  let taskCategory = document.getElementById("task-category").innerText;
+  let title = document.getElementById("title-input").value;
+
+  if (title === "" || dueDate === "" || taskCategory === "Select task category") {
+    emptyDate();
+    emptyTitle();
+    emptyCategoryRequired();
+    return;
+  }
+
+  await addedToBoard();
+
+  let selectedContactsData = selectedContacts.reduce((acc, isSelected, index) => {
+    if (isSelected) {
+      acc[`contact${index + 1}`] = contactsArray[index];
+    }
+    return acc;
+  }, {});
+
+  let subtasksObj = subtasks.reduce((acc, subtask, index) => {
+    acc[`subtask${index + 1}`] = {
+      title: subtask.title,
+      completed: subtask.completed,
+    };
+    return acc;
+  }, {});
+
+  let newTask = {
+    board_category: boardCategory,
+    contacts: selectedContactsData,
+    description: description,
+    due_date: dueDate,
+    prio: prio,
+    subtasks: subtasksObj,
+    task_category: taskCategory,
+    title: title,
+  };
+
+  let postResponse = await postTask("", newTask);
+
+  goToBoard();
+
+  let dataFetched = await boardInit();
+
+  subtasks = [];
+}
+
+/**
+ * Gets the selected priority level.
+ * @returns {string} - The selected priority level ("urgent", "medium", or "low").
+ */
+function getSelectedPrio() {
+  if (document.getElementById("highButton").classList.contains("selected-high-button")) {
+    return "urgent";
+  }
+  if (document.getElementById("mediumButton").classList.contains("selected-medium-button")) {
+    return "medium";
+  }
+  if (document.getElementById("lowButton").classList.contains("selected-low-button")) {
+    return "low";
+  }
+  return "medium";
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#addMouseDownListeners">addMouseDownListeners</a></li><li><a href="global.html#addedToBoard">addedToBoard</a></li><li><a href="global.html#category">category</a></li><li><a href="global.html#changeSubtask">changeSubtask</a></li><li><a href="global.html#changeSubtaskLayer">changeSubtaskLayer</a></li><li><a href="global.html#checkContacts">checkContacts</a></li><li><a href="global.html#clearButtons">clearButtons</a></li><li><a href="global.html#clearContacts">clearContacts</a></li><li><a href="global.html#clearSubtasks">clearSubtasks</a></li><li><a href="global.html#clearTask">clearTask</a></li><li><a href="global.html#closeContactDropdown">closeContactDropdown</a></li><li><a href="global.html#closeSubtask">closeSubtask</a></li><li><a href="global.html#createSubtask">createSubtask</a></li><li><a href="global.html#createTask">createTask</a></li><li><a href="global.html#deleteSubtask">deleteSubtask</a></li><li><a href="global.html#emptyCategory">emptyCategory</a></li><li><a href="global.html#emptyDate">emptyDate</a></li><li><a href="global.html#emptyTitle">emptyTitle</a></li><li><a href="global.html#futureDate">futureDate</a></li><li><a href="global.html#getSelectedPrio">getSelectedPrio</a></li><li><a href="global.html#highButton">highButton</a></li><li><a href="global.html#initializeAddTask">initializeAddTask</a></li><li><a href="global.html#lowButton">lowButton</a></li><li><a href="global.html#mediumButton">mediumButton</a></li><li><a href="global.html#newSubtask">newSubtask</a></li><li><a href="global.html#renderSubtasks">renderSubtasks</a></li><li><a href="global.html#resetSelectedContacts">resetSelectedContacts</a></li><li><a href="global.html#showContacts">showContacts</a></li><li><a href="global.html#showContactsInAddTask">showContactsInAddTask</a></li><li><a href="global.html#showContactsInAddTaskLayer">showContactsInAddTaskLayer</a></li><li><a href="global.html#showContactsInEdit">showContactsInEdit</a></li><li><a href="global.html#standardButton">standardButton</a></li><li><a href="global.html#technicalTask">technicalTask</a></li><li><a href="global.html#updateDateStyle">updateDateStyle</a></li><li><a href="global.html#updateSubtask">updateSubtask</a></li><li><a href="global.html#updateSubtaskLayer">updateSubtaskLayer</a></li><li><a href="global.html#userStory">userStory</a></li><li><a href="global.html#whichSourceSubtask">whichSourceSubtask</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Thu Jul 25 2024 12:13:58 GMT+0200 (Mitteleuropäische Sommerzeit)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

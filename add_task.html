@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AddTask</title>
+    <link rel="icon" href="../img/logo.svg">
+    <link rel="stylesheet" href="css/fonts.css">
+    <link rel="stylesheet" href="css/desktop_template.css">
+    <link rel="stylesheet" href="css/add_task.css">
+    <link rel="stylesheet" href="privacy_policy.css">
+    <link rel="stylesheet" href="css/board.css">
+</head>
+
+<body onload="initializeAddTask()">
+    <header>
+        <div class="header-content">
+            <img onclick="goToSummary()" style="cursor: pointer" class="d-none" src="img/logo-dark.png" alt="">
+            <p>Kanban Project Management Tool</p>
+            <div class="header-icons">
+                <img onclick="goToHelp()" class="header-help" src="../img/help.svg" alt="questionmark" />
+                <div id="user-logo" onclick="toggleMenu()" class="header-user-name"></div>
+            </div>
+        </div>
+    </header>
+
+    <div class="user-content" id="user-content">
+        <a onclick="goToLegalNotice()" href="#">Legal Notice</a>
+        <a onclick="goToPrivacyPolicy()" href="#">Privacy Policy</a>
+        <a onclick="logOut()" href="index.html">Log Out</a>
+    </div>
+
+
+    <div class="sidebar">
+        <img onclick="goToSummary()" src="../img/logo.svg" alt="" class="sidebar-logo" />
+        <div class="sidebar-menu">
+            <a href="#" class="sidebar-links" onclick="goToSummary()" id="link-summary">
+                <img src="../img/sidebar_summary.svg" alt="" />Summary
+            </a>
+            <a href="#" class="sidebar-links" onclick="goToTask()" id="link-task">
+                <img src="../img/edit_square.svg" alt="" />Add Task
+            </a>
+            <a href="#" class="sidebar-links" onclick="goToBoard()" id="link-board">
+                <img src="../img/sidebar_board.svg" alt="" />Board
+            </a>
+            <a href="#" class="sidebar-links" onclick="goToContacts()" id="link-contacts">
+                <img src="../img/sidebar_contacts.svg" alt="" />Contacts
+            </a>
+        </div>
+        <div class="sidebar-menu-bottom">
+            <a id="link-privacy-policy" onclick="goToPrivacyPolicy()" href="#">Privacy Policy</a>
+            <a id="link-legal-notice" onclick="goToLegalNotice()" href="#">Legal Notice</a>
+        </div>
+    </div>
+
+
+    <div class="add-task-section">
+        <div>
+            <h1 class="headline">Add Task</h1>
+        </div>
+        <div class="add-task-content">
+            <div class="left-section">
+                
+                <p class="title-headline">Title<span class="span-red">*</span></p>
+                <input class="title" id="title-input" onkeyup="emptyTitle()" required type="text"
+                    placeholder="Enter a title">
+                <span id="title-required"></span>
+                <p class="description">Description</p>
+                <textarea placeholder="Enter a Description" name="" id="description-input"></textarea>
+                <p class="assigned-to">Assigned to</p>
+
+                <div id="select-contact" onclick="showContacts()" class="select-contact">
+                    <span>Select contact to assign</span>
+                    <img src="add_task_img/arrow-down.svg" alt="">
+                </div>
+                <div class="add-task-contacts d-none" id="add-task-contacts">
+
+                </div>
+                <div id="add-task-contactsHTML" class="edit-task-contacts-site">
+
+                </div>
+                
+            </div>
+
+            <div class="parting-line"></div>
+
+            <div class="right-section">
+                <p>Due date<span class="span-red">*</span></p>
+                <input class="date-input" onclick="emptyDate()" id="date-input" required type="date">
+                <span id="date-required"></span>
+
+                <p class="prio">Prio</p>
+                <div class="buttons">
+                    <button id="highButton" onclick="highButton()" class="prio-buttons">Urgent <img id="highButtonImg"
+                            src="add_task_img/high.svg"></button>
+                    <button id="mediumButton" onclick="mediumButton()" class="prio-buttons">Medium <img id="mediumButtonImg"
+                            src="add_task_img/medium.svg"></button>
+                    <button id="lowButton" onclick="lowButton()" class="prio-buttons">Low <img id="lowButtonImg"
+                            src="add_task_img/low.svg"></button>
+                </div>
+
+                <p class="category">Category<span class="span-red">*</span></p>
+                <div class="dropdown-category">
+                    <div id="category-input" onclick="category()" required class="category-menu">
+                        <span id="task-category">Select task category</span>
+                        <img src="add_task_img/arrow-down.svg" alt="">
+                    </div>
+                    <div id="category-required"></div>
+                    <div class="d-none" id="category"></div>
+                </div>
+
+                <p class="subtasks">Subtasks</p>
+                <div class="subtask-layout">
+                    <input placeholder="add new subtask" onclick="newSubtask()" id="subtask-field" class="subtasks-field">
+                    <div class="d-none" id="edit-subtask"></div>
+                    <img onclick="newSubtask()" id="subtask-plus" class="subtask-plus" src="add_task_img/plus.svg" alt="">
+                </div>
+                <div id="subtask-required"></div>
+                <div class="create-subtask" id="create-subtask"></div>
+                
+            </div>
+        </div>
+        <div class="add-task-bottom">
+            <div class="required-text">
+                <p><span class="span-red">*</span>This field is required</p>
+            </div>
+            <div class="mobile-create">
+                <div class="required-text-mobile">
+                    <p><span class="span-red">*</span>This field is required</p>
+                    <div>
+                        <button onclick="createTask()" class="create-task-button-mobile button-small">Create Task <img
+                                src="add_task_img/check-white.svg" alt=""></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bottom-buttons">
+                <button onclick="clearTask()" class="clear-button">Clear <img src="add_task_img/x.svg" alt=""></button>
+                <button id="create-task" onclick="createTask()" class="create-task-button">Create Task <img
+                        src="add_task_img/check-white.svg" alt=""></button>
+            </div>
+        </div>
+    </div>
+    <div id="added-to-board">
+        <img id="addedBoardImg" src="./add_task_img/Added to board.svg" alt="">
+    </div>
+
+    <script src="script.js"></script>
+    <script src="js/getHTML.js"></script>
+    <script src="js/add_task.js"></script>
+    <script src="js/add_task_subtasks.js"></script>
+    <script src="js/add_task_contacts.js"></script>
+    <script src="js/board.js"></script>
+    <script src="/js/board_layer.js"></script>
+    <script src="/js/board_edit_layer.js"></script>
+    <script src="js/contacts.js"></script>
+</body>
+
+</html>

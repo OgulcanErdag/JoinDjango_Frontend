@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: getHTML.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: getHTML.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * This function returns the code for task cards on board.html.
+ * @param {string} key - task key
+ * @param {string} categoryClass - board category
+ * @param {object} task - task object
+ * @param {number} i 
+ * @param {string} contactsHTML - HTML for the contact bubbles
+ * @param {string} prioSrc - name of the img used for priorise the task
+ * @param {number} totalSubtasks - all subtasks of the task
+ * @param {number} completedSubtasks - nubmer of checked subtasks
+ * @param {number} progressPercentage - totalSubtasks/completedSubtasks
+ * @returns code for the task cards on board.html
+ */
+function getTaskOnBoardHTML(key, categoryClass, task, i, contactsHTML, prioSrc, totalSubtasks, completedSubtasks, progressPercentage) {
+    let truncatedDescription = truncateDescription(task.description, 50);
+
+  return `
+        &lt;div onclick="openTask('${key}')" draggable="true" ondragstart="startDragging('${key}')" class="task-on-board">
+            &lt;div class="task-on-board-category ${categoryClass}">${task.task_category}&lt;/div>
+            &lt;div class="task-on-board-headline">${task.title}&lt;/div>
+            &lt;div class="task-on-board-text">${truncatedDescription}&lt;/div>
+            ${
+              totalSubtasks > 0
+                ? `
+                &lt;div class="task-on-board-subtasks">
+                    &lt;div class="progress-bar-container">
+                        &lt;div class="progress-bar" style="width: ${progressPercentage}%;">&lt;/div>
+                    &lt;/div>
+                    &lt;div class="task-on-board-subtasks-text">${completedSubtasks}/${totalSubtasks} Subtasks&lt;/div>
+                &lt;/div>`
+                : ""
+            }
+            &lt;div class="task-on-board-lastrow">
+                &lt;div class="task-on-board-contacts" id="task-on-board-contacts${i}">
+                    ${contactsHTML}
+                &lt;/div>
+                &lt;img src="${prioSrc}" alt="" class="task-on-board-relevance">
+            &lt;/div>
+        &lt;/div>
+    `;
+}
+
+/**
+ * This function ensures that the description only is less than 51 letters long on the task cards
+ * @param {string} description -description text
+ * @param {*} maxLength - max length 50
+ * @returns the description with max 50 letters
+ */
+function truncateDescription(description, maxLength) {
+    return description.length > maxLength ? description.substring(0, maxLength) + "..." : description;
+  }
+
+  /**
+   * This function shows the task details when clicking on the task card.   
+   * @param {object} task 
+   * @param {string} key - task key
+   * @param {string} categoryClass - board category
+   * @param {string} contactsHTML - HTML of the contact bubbles
+   * @param {string} subtasksHTML - HTML of the subtaskks
+   * @returns HTML of the task details
+   */
+function getTaskLayerHTML(task, key, categoryClass, contactsHTML, subtasksHTML) {
+  return `
+        &lt;div class="show-task-firstrow">
+            &lt;div class="show-task-category ${categoryClass}">${task.task_category}&lt;/div>
+            &lt;div class="show-task-close" onclick="closeTask()">
+                &lt;img src="img/add-contact-close.svg" alt="">
+            &lt;/div>
+        &lt;/div>
+        &lt;h1>${task.title}&lt;/h1>
+        &lt;div class="show-task-scroll">
+            &lt;p class="show-task-description">${task.description}&lt;/p>
+            &lt;div class="show-task-text-rows">
+                &lt;p class="show-task-characteristic">Due date:&lt;/p>&lt;p>${task.due_date}&lt;/p>
+            &lt;/div>
+            &lt;div class="show-task-text-rows">
+                &lt;p class="show-task-characteristic">Priority:&lt;/p>
+                &lt;p>${capitalize(task.prio)}&lt;/p>
+                &lt;img src="/add_task_img/${task.prio}.svg" alt="">
+            &lt;/div>
+            &lt;div id="assigned-headline" class="show-task-text-rows pb8 mt12">
+                &lt;p class="show-task-characteristic">Assigned To:&lt;/p>
+            &lt;/div>
+            &lt;div class="show-task-contacts">
+                ${contactsHTML}
+            &lt;/div>
+            &lt;div id="subtasks-headline" class="show-task-text-rows pb8 mt12">
+                &lt;p class="show-task-characteristic">Subtasks:&lt;/p>
+            &lt;/div>
+            &lt;div class="show-task-subtasks">
+                ${subtasksHTML}
+            &lt;/div>
+            &lt;div class="show-task-lastrow mt12">
+                &lt;a href="#" class="show-task-lastrow-link" onclick="deleteTask('${key}')">&lt;img class="show-task-icon" src="/add_task_img/delete.svg" alt="">Delete&lt;/a>
+                &lt;div class="show-task-lastrow-line">&lt;/div>
+                &lt;a href="#" class="show-task-lastrow-link" onclick="showEditTask('${key}')">&lt;img class="show-task-icon" src="img/edit2.svg" alt="">Edit&lt;/a>
+            &lt;/div>
+        &lt;/div>
+    `;
+}
+
+/**
+ * This function generates the edit task layer by onclick.
+ * @param {} task 
+ * @param {string} key - task key
+ * @param {string} contactsHTML - generates the HTML for the contact bubbles
+ * @param {string} subtasksHTML - generates the HTML for the subtasks to edit
+ * @param {string} highSelected - css-class for the button prio 
+ * @param {string} highImgSrc - src of the prio image
+ * @param {string} mediumSelected - css-class for the button prio 
+ * @param {string} mediumImgSrc - src of the prio image
+ * @param {string} lowSelected - css-class for the button prio 
+ * @param {string} lowImgSrc - src of the prio image
+ * @returns HTML of the edit task layer
+ */
+function getEditHTML(task, key, contactsHTML, subtasksHTML, highSelected, highImgSrc, mediumSelected, mediumImgSrc, lowSelected, lowImgSrc) {
+  return `
+        &lt;div class="show-task-firstrow flex-end">
+            &lt;div class="show-task-close" onclick="closeTask()">
+                &lt;img src="img/add-contact-close.svg" alt="">
+            &lt;/div>
+        &lt;/div>
+        &lt;div class="edit-scroll-area">
+            &lt;div class="edit-task-element">
+                &lt;p>Title&lt;/p>
+                &lt;input type="text" id="edit-title-input" value="${task.title}">
+            &lt;/div>
+            &lt;div class="edit-task-element">
+                &lt;p>Description&lt;/p>
+                &lt;input type="text" id="edit-description-input" value="${task.description}">
+            &lt;/div>
+            &lt;div class="edit-task-element">
+                &lt;p>Due Date&lt;/p>
+                &lt;div class="input-container">
+                    &lt;input class="edit-task-input" id="edit-date-input" value="${task.due_date}" required type="date">
+                &lt;/div>
+            &lt;/div>
+            &lt;div class="edit-task-element">
+                &lt;p>Priority&lt;/p>
+                &lt;div class="buttons">
+                    &lt;button id="highButton" onclick="highButton()" class="prio-buttons pb-edit prio-buttons-shadow ${highSelected}">Urgent &lt;img id="highButtonImg" src="${highImgSrc}">&lt;/button>
+                    &lt;button id="mediumButton" onclick="mediumButton()" class="prio-buttons pb-edit prio-buttons-shadow ${mediumSelected}">Medium &lt;img id="mediumButtonImg" src="${mediumImgSrc}">&lt;/button>
+                    &lt;button id="lowButton" onclick="lowButton()" class="prio-buttons pb-edit prio-buttons-shadow ${lowSelected}">Low &lt;img id="lowButtonImg" src="${lowImgSrc}">&lt;/button>
+                &lt;/div>
+            &lt;/div>
+            &lt;div class="edit-task-element">
+                &lt;p>Assigned to&lt;/p>
+                &lt;div onclick="showContacts()" class="select-contact select-contact-edit">
+                    &lt;span>Select contact to assign&lt;/span>
+                    &lt;img src="add_task_img/arrow-down.svg" alt="">
+                &lt;/div>
+                &lt;div class="add-task-contacts add-task-contacts-edit d-none" id="add-task-contacts">&lt;/div>
+                &lt;div class="edit-task-contacts">
+                    ${contactsHTML}
+                &lt;/div>
+            &lt;/div>
+            &lt;div class="edit-task-element">
+                &lt;p>Subtasks&lt;/p>
+                &lt;div class="subtask-layout">
+                    &lt;input placeholder="add new subtask" onclick="newSubtask()" id="subtask-field" class="subtasks-field">
+                    &lt;div class="d-none" id="edit-subtask">&lt;/div>
+                    &lt;img onclick="newSubtask()" id="subtask-plus" class="subtask-plus" src="add_task_img/plus.svg" alt="">  
+                &lt;/div>
+                &lt;div class="create-subtask pos-relative" id="create-subtask">${subtasksHTML}&lt;/div>
+            &lt;/div>
+        &lt;/div>
+        &lt;div class="show-task-lastrow">
+            &lt;button class="button-dark" onclick="saveTaskChanges('${key}')">Ok &lt;img src="add_task_img/check-white.svg" alt="">&lt;/button>
+        &lt;/div>
+    `;
+}
+
+
+/**
+ * This function returns the code for the add task layer in board.html.
+ * @param {*} boardCategory - board category 
+ * @param {*} contactsHTML - HTML for the already added contacts rendered in the layer.
+ * @returns code for the add task layer in board.html
+ */
+function generateAddTaskLayer(boardCategory, contactsHTML) {
+    return `
+          &lt;div class="add-task-section add-task-section-layer width-auto no-margin-left">
+        &lt;div class="add-task-firstrow align-items-start">
+            &lt;h1 class="headline">Add Task&lt;/h1>
+            &lt;div class="show-task-close" onclick="closeTask()">
+                    &lt;img src="img/add-contact-close.svg" alt="">
+                &lt;/div>
+        &lt;/div>
+        &lt;div class="add-task-content border-bottom scroll">
+            &lt;div class="left-section">
+                
+                &lt;p class="title-headline">Title&lt;span class="span-red">*&lt;/span>&lt;/p>
+                &lt;input class="title" id="title-input" onkeyup="emptyTitle()" required type="text"
+                    placeholder="Enter a title">
+                &lt;span id="title-required">&lt;/span>
+                &lt;p class="description">Description&lt;/p>
+                &lt;textarea placeholder="Enter a Description" name="" id="description-input">&lt;/textarea>
+                &lt;p class="assigned-to">Assigned to&lt;/p>
+
+                &lt;div id="select-contact" onclick="showContacts()" class="select-contact">
+                    &lt;span>Select contact to assign&lt;/span>
+                    &lt;img src="add_task_img/arrow-down.svg" alt="">
+                &lt;/div>
+                &lt;div class="add-task-contacts d-none" id="add-task-contacts">
+
+                &lt;/div>
+                &lt;div id="add-task-contactsHTML" class="edit-task-contacts-site">
+                    ${contactsHTML}
+                &lt;/div>
+                
+            &lt;/div>
+
+            &lt;div class="parting-line">&lt;/div>
+
+            &lt;div class="right-section">
+                &lt;p>Due date&lt;span class="span-red">*&lt;/span>&lt;/p>
+                &lt;input class="date-input" onclick="emptyDate()" id="date-input" required type="date">
+                &lt;span id="date-required">&lt;/span>
+
+                &lt;p class="prio">Prio&lt;/p>
+                &lt;div class="buttons">
+                    &lt;button id="highButton" onclick="highButton()" class="prio-buttons">Urgent &lt;img id="highButtonImg"
+                            src="add_task_img/high.svg">&lt;/button>
+                    &lt;button id="mediumButton" onclick="mediumButton()" class="prio-buttons">Medium &lt;img id="mediumButtonImg"
+                            src="add_task_img/medium.svg">&lt;/button>
+                    &lt;button id="lowButton" onclick="lowButton()" class="prio-buttons">Low &lt;img id="lowButtonImg"
+                            src="add_task_img/low.svg">&lt;/button>
+                &lt;/div>
+
+                &lt;p class="category">Category&lt;span class="span-red">*&lt;/span>&lt;/p>
+                &lt;div class="dropdown-category">
+                    &lt;div id="category-input" onclick="category()" required class="category-menu">
+                        &lt;span id="task-category">Select task category&lt;/span>
+                        &lt;img src="add_task_img/arrow-down.svg" alt="">
+                    &lt;/div>
+                    &lt;div id="category-required">&lt;/div>
+                    &lt;div class="d-none" id="category">&lt;/div>
+                &lt;/div>
+
+                &lt;p class="subtasks">Subtasks&lt;/p>
+                &lt;div class="subtask-layout">
+                    &lt;input placeholder="add new subtask" onclick="newSubtask()" id="subtask-field" class="subtasks-field">
+                    &lt;div class="d-none" id="edit-subtask">&lt;/div>
+                    &lt;img onclick="newSubtask()" id="subtask-plus" class="subtask-plus" src="add_task_img/plus.svg" alt="">
+                &lt;/div>
+                &lt;div id="subtask-required">&lt;/div>
+                &lt;div class="create-subtask pos-relative-add" id="create-subtask">&lt;/div>
+                &lt;div class="mobile-create">
+                &lt;div class="required-text-mobile bottom-0 required-text-mobile-layer mt12">
+                    &lt;p>&lt;span class="span-red">*&lt;/span>This field is required&lt;/p>
+                    &lt;div>
+                        &lt;button onclick="createTask()" class="create-task-button-mobile">Create Task &lt;img
+                                src="add_task_img/check-white.svg" alt="">&lt;/button>
+                    &lt;/div>
+                &lt;/div>
+            &lt;/div>
+                
+            &lt;/div>
+            
+        &lt;/div>
+        
+        
+        &lt;div class="add-task-bottom">
+            &lt;div class="required-text  required-text-layer">
+                &lt;p>&lt;span class="span-red">*&lt;/span>This field is required&lt;/p>
+            &lt;/div>
+            
+
+            &lt;div class="bottom-buttons bottom-buttons-layer">
+                &lt;button onclick="clearTask()" class="clear-button">Clear &lt;img src="add_task_img/x.svg" alt="">&lt;/button>
+                &lt;button id="create-task" onclick="createTask('${boardCategory}')" class="create-task-button">Create Task &lt;img
+                        src="add_task_img/check-white.svg" alt="">&lt;/button>
+            &lt;/div>
+        &lt;/div>
+    &lt;/div>
+    &lt;div id="added-to-board">
+        &lt;img id="addedBoardImg" src="./add_task_img/Added to board.svg" alt="">
+    &lt;/div>
+      `;
+  }
+
+/**
+ * This function retruns the code for the contact bubbles in the task cards on board.html.
+ * @param {object} contact 
+ * @returns code for the contact bubbles in the task cards on board.html
+ */
+function generateContact(contact) {
+  const initials = getInitials(contact.name);
+  return `
+          &lt;div class="task-on-board-contact" style="background-color: ${contact.color};">${initials}&lt;/div>
+      `;
+}
+
+/**
+ * This function returns the code of the last contact bubble in the task cards on board.html, 
+ * which shows the number of the further contacts more than four.
+ * @param {number} remainingContacts - further contacts mor than four
+ * @returns code of the last contact bubble in the task cards on board.html
+ */
+function generateRemainingContactsHTML(remainingContacts) {
+  return `
+        &lt;div class="task-on-board-contact" style="background-color: white; color: black; border: 1px solid black;">+${remainingContacts}&lt;/div>
+    `;
+}
+
+/**
+ * This function returns the code of the icons shown wehn clicking on the plus for  new subtask
+ * in add_task.html and in the add task layer in board.html.
+ * @returns a close- and a check-img
+ */
+function newSubtaskHTML() {
+  return `&lt;div id="closeAndCheck" class="closeAndCheck">
+    &lt;img id="closeSubtask" onclick="closeSubtask()" src="add_task_img/close.svg" alt="" />
+    &lt;div class="subtask-line">&lt;/div>
+    &lt;img onclick="createSubtask()" id="checkSubtask" src="add_task_img/check.svg" alt="" />
+  &lt;/div>`;
+}
+
+/**
+ * This function returns the code for a new added subtask as a list element in
+ * add_task.html and in the add task layer in board.html.
+ * @param {number} i 
+ * @param {object} subtask 
+ * @returns list-element with edit- and save-button
+ */
+function createSubtaskHTML(i, subtask) {
+  return `&lt;div id="subtask-tasks${i}" class="subtasks-tasks">
+      &lt;div>
+        &lt;ul class="subtask-list">
+          &lt;li id="subtask-${i}" ondblclick="changeSubtask(${i})" class="subtask-list-element">${subtask.title}&lt;/li>
+        &lt;/ul>
+      &lt;/div>
+      &lt;div class="subtask-list-icons">
+        &lt;img id="edit-logo${i}" onclick="whichSourceSubtask(${i})" src="add_task_img/edit.svg" alt="" />
+        &lt;div class="subtask-line">&lt;/div>
+        &lt;img onclick="deleteSubtask(${i})" src="add_task_img/delete.svg" alt="" />
+      &lt;/div>
+    &lt;/div>`;
+}
+
+/**
+ * This function returns the code for a new added subtask as a list element in
+ * add_task.html and in the add task layer in board.html.
+ * @param {number} i 
+ * @param {object} subtask 
+ * @returns list-element with edit- and save-button
+ */
+function renderSubtasksHTML(i, subtask) {
+  return `
+      &lt;div id="subtask-tasks${i}" class="subtasks-tasks">
+        &lt;div>
+          &lt;ul class="subtask-list">
+            &lt;li id="subtask-${i}" ondblclick="changeSubtask(${i})" class="subtask-list-element">${subtask.title}&lt;/li>
+          &lt;/ul>
+        &lt;/div>
+        &lt;div class="subtask-list-icons">
+          &lt;img id="edit-logo${i}" onclick="whichSourceSubtask(${i})" src="add_task_img/edit.svg" alt="Delete" />
+          &lt;div class="subtask-line">&lt;/div>
+          &lt;img onclick="deleteSubtask(${i})" src="add_task_img/delete.svg" alt="" />
+        &lt;/div>
+      &lt;/div>`;
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#createSubtaskHTML">createSubtaskHTML</a></li><li><a href="global.html#generateAddTaskLayer">generateAddTaskLayer</a></li><li><a href="global.html#generateContact">generateContact</a></li><li><a href="global.html#generateRemainingContactsHTML">generateRemainingContactsHTML</a></li><li><a href="global.html#getEditHTML">getEditHTML</a></li><li><a href="global.html#getTaskLayerHTML">getTaskLayerHTML</a></li><li><a href="global.html#getTaskOnBoardHTML">getTaskOnBoardHTML</a></li><li><a href="global.html#newSubtaskHTML">newSubtaskHTML</a></li><li><a href="global.html#renderSubtasksHTML">renderSubtasksHTML</a></li><li><a href="global.html#truncateDescription">truncateDescription</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Fri Jul 26 2024 11:46:34 GMT+0200 (Mitteleuropäische Sommerzeit)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,1085 @@
+body {
+    background-color: #f6f7f8;
+    overflow-x: hidden;
+  }
+  .headline {
+    font-size: 61px;
+    line-height: 73.2px;
+  }
+  .mobile-create {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+  }
+  .add-task-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: 324px;
+    margin-bottom: 100px;
+  }
+  .add-task-section-layer {
+    margin-left: 0;
+    margin-bottom: 0;
+    height: 100%;
+  }
+  .width-auto {
+    width: auto;
+  }
+  .add-task-content {
+    display: flex;
+  }
+  .add-task-bottom {
+    display: flex;
+    width: 960px;
+    justify-content: space-between;
+  }
+  .span-red {
+    color: #ff8190;
+  }
+  .title-headline {
+    margin-bottom: 8px;
+  }
+  .title {
+    outline: none;
+    width: 396px;
+    border-radius: 10px;
+    border: 1px solid #d1d1d1;
+    padding: 12px 21px 12px 21px;
+    font-size: 20px;
+  }
+  .left-section input::placeholder {
+    font-size: 20px;
+    color: #d1d1d1;
+  }
+  .left-section input:focus {
+    border: 1px solid #29abe2;
+  }
+  .description {
+    margin-top: 28px;
+    margin-bottom: 8px;
+  }
+  .left-section textarea {
+    font-size: 20px;
+    line-height: 24px;
+    outline: none;
+    height: 86px;
+    width: 406px;
+    border-radius: 10px;
+    border: 1px solid #d1d1d1;
+    padding: 18px 16px 18px 16px;
+    gap: 10px;
+    font-family: "Inter", sans-serif;
+  }
+  .edit-task-contacts-site {
+    display: flex;
+  }
+  .show-task-contact-letters {
+    width: 42px;
+    height: 42px;
+    border: 2px solid white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 12px;
+    position: relative;
+    background-color: #1fd7c1;
+  }
+  .left-section textarea:focus {
+    border: 1px solid #29abe2;
+  }
+  .left-section textarea::placeholder {
+    font-family: "Inter";
+    color: #d1d1d1;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 24px;
+  }
+  .assigned-to {
+    margin-top: 28px;
+    margin-bottom: 8px;
+  }
+  .select-contact {
+    display: flex;
+    justify-content: space-between;
+    background-color: white;
+    border-radius: 10px;
+    border: 1px solid #d1d1d1;
+    cursor: pointer;
+    width: 406px;
+    padding: 12px 16px 12px 16px;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 24px;
+  }
+  .select-contact:hover {
+    border: 1px solid #ababab;
+  }
+  .parting-line {
+    margin-left: 40px;
+    border: 1px solid #d1d1d1;
+    height: 424px;
+  }
+  .right-section {
+    margin-left: 40px;
+  }
+  
+  .right-section-layer {
+    margin-left: 40px !important;
+  }
+  .right-section p {
+    margin-bottom: 8px;
+  }
+  .date-input {
+    outline: none;
+    cursor: pointer;
+    width: 406px;
+    border-radius: 10px;
+    border: 1px solid #d1d1d1;
+    padding: 12px 16px 12px 16px;
+    font-size: 20px;
+    font-family: "Inter";
+    color: #d1d1d1;
+  }
+  .right-section input:focus {
+    border: 1px solid #29abe2;
+  }
+  .prio {
+    margin-top: 20px;
+  }
+  .buttons {
+    display: flex;
+    gap: 16px;
+  }
+  .prio-buttons {
+    cursor: pointer;
+    width: 136px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    background-color: white;
+    border-radius: 10px;
+    padding: 16px 10px 16px 10px;
+    font-family: "Inter";
+    font-size: 20px;
+    box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.1);
+  }
+  .show {
+    display: block;
+  }
+  .prio-buttons-shadow {
+    box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.1);
+  }
+  .category {
+    margin-top: 28px;
+  }
+  .category-menu {
+    align-items: center;
+    background-color: white;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    width: 406px;
+    border-radius: 10px;
+    border: 1px solid #d1d1d1;
+    padding: 12px 16px 12px 16px;
+    font-size: 20px;
+  }
+  .category-menu:hover {
+    border: 1px solid #ababab;
+  }
+  .category-option {
+    padding: 10px;
+  }
+  .category-options {
+    position: absolute;
+    background-color: white;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    width: 440px;
+    border-radius: 10px;
+    font-size: 20px;
+    flex-direction: column;
+  }
+  .category-options span {
+    cursor: pointer;
+    padding: 12px 16px 12px 16px;
+    border-radius: 10px;
+  }
+  .category-options span:hover {
+    background-color: #d1d1d1;
+    cursor: pointer;
+  }
+  .subtasks {
+    margin-top: 28px;
+  }
+  .subtasks-field {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    border: 1px solid #d1d1d1;
+    outline: none;
+    width: 350px;
+    font-size: 20px;
+    line-height: 24px;
+    border-radius: 10px;
+    padding: 12px 70px 12px 16px;
+  }
+  
+  .bottom-buttons {
+    display: flex;
+    justify-content: end;
+    gap: 16px;
+    margin-top: 140px;
+  }
+  .bottom-buttons-layer {
+    margin-top: 20px;
+  }
+  .border-bottom {
+    border-top: 2px solid #d1d1d1;
+    padding-top: 20px;
+  }
+  .clear-button {
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid black;
+    padding: 16px;
+    font-size: 20px;
+    line-height: 24px;
+    gap: 4px;
+    cursor: pointer;
+  }
+  .create-task-button {
+    font-weight: 700 !important;
+    color: white;
+    background-color: #2a3647;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid black;
+    padding: 16px;
+    font-size: 21px;
+    line-height: 25.2px;
+    gap: 4px;
+    cursor: pointer;
+  }
+  .required-text {
+    margin-top: 175px;
+  }
+  .required-text-layer {
+    margin-top: 20px;
+  }
+  .input-fields {
+    border: 1px solid #d1d1d1;
+    border-radius: 10px;
+  }
+  .high {
+    background-color: red;
+    color: white;
+    font-weight: 700;
+  }
+  .prio-buttons .prio-buttons:hover {
+    box-shadow: 0px 4px 4px 0px #00000040;
+  }
+  .selected-high-button {
+    background: #ff3d00;
+    color: white;
+    font-weight: 700;
+  }
+  .selected-medium-button {
+    background: #ffa800;
+    color: white;
+    font-weight: 700;
+  }
+  .selected-low-button {
+    background: #7ae229;
+    color: white;
+    font-weight: 700;
+  }
+  .title-required {
+    font-size: 12px;
+    line-height: 14.4px;
+    color: #ff8190;
+    margin-top: 4px;
+  }
+  .subtask-layout {
+    display: flex;
+    align-items: center;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    outline: none;
+  }
+  .subtask-plus {
+    display: flex;
+    background-color: white;
+    margin-left: -37px;
+    border-radius: 10px;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+  }
+  .subtasks-field::placeholder {
+    font-family: "Inter";
+    color: #d1d1d1;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 24px;
+  }
+  .d-none {
+    display: none;
+  }
+  .closeAndCheck {
+    cursor: pointer;
+    gap: 4px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    background-color: white;
+    margin-left: -70px;
+  }
+  .closeAndCheck img {
+    cursor: pointer;
+  }
+  .subtask-line {
+    border: 1px solid #d1d1d1;
+    height: 24px;
+  }
+  .subtask-list-element {
+    font-size: 14px;
+    line-height: 19.2px;
+  }
+  .subtask-list-icons {
+    display: flex;
+    gap: 4px;
+  }
+  .subtasks-tasks {
+    cursor: pointer;
+    border-radius: 10px;
+    margin-top: 8px;
+    padding: 6px 2px 6px 2px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .subtask-tasks-edit {
+    border-radius: 0px;
+    border-bottom: 1px solid #29abe2;
+    background-color: white !important;
+    cursor: pointer;
+    margin-top: 8px;
+    padding: 6px 16px 6px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .subtask-edit-div {
+    outline: none;
+  }
+  .subtasks-tasks:hover {
+    background-color: #d1d1d1;
+  }
+  ul {
+    margin: auto;
+  }
+  .test:hover {
+    background-color: #d1d1d1;
+    cursor: pointer;
+  }
+  .show-task-content:first-child {
+    margin-top: 10px;
+  }
+  .show-task-contact-add-task {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+  .add-task-contacts {
+    background-color: white;
+    border-radius: 10px;
+    position: absolute;
+    width: 440px;
+    overflow: scroll;
+    height: 240px;
+    z-index: 100;
+  }
+  .add-task-contacts-edit {
+    position: relative !important;
+    top: auto !important;
+    width: 440px !important;
+  }
+  .add-task-contacts::-webkit-scrollbar {
+    display: none;
+  }
+  .contacts-pos {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 16px 7px 16px;
+    margin-bottom: 1px;
+  }
+  .contacts-pos-highlight {
+    background-color: #091931 !important;
+    color: white;
+    border-radius: 10px;
+  }
+  .checkbox {
+    display: flex;
+    align-items: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+  }
+  .contacts-pos:hover {
+    cursor: pointer;
+    background-color: #d1d1d1;
+    border-radius: 10px;
+  }
+  .test11 {
+    background: #2a3647;
+  }
+  .create-subtask {
+    position: absolute;
+    z-index: 1000;
+    width: 440px;
+    overflow-y: scroll;
+    height: 100px;
+  }
+  .create-subtask::-webkit-scrollbar {
+    display: none;
+  }
+  .pos-relative {
+    position: relative;
+    height: auto;
+    max-height: 100px;
+    width: 440px !important;
+  }
+  .pos-relative-add-contacts {
+    position: initial !important;
+  }
+  .show-task-contact-add-task p {
+    padding-bottom: 0 !important;
+  }
+  #added-to-board {
+    position: fixed;
+    bottom: -100px; /* Start position off-screen */
+    left: 50%;
+    transform: translateX(-50%);
+    transition: all 1s ease-in-out, ease-in-out 1s; /* Animate both position and opacity */
+  }
+  #added-to-board.animate {
+    bottom: 50%;
+    opacity: 1;
+  }
+  .scroll {
+    overflow-y: scroll;
+    height: 100vh;
+  }
+  
+  @media (max-width: 1300px) {
+    .add-task-bottom {
+      width: 750px;
+    }
+    .title {
+      width: 290px;
+    }
+    .left-section textarea {
+      width: 300px;
+    }
+    .select-contact {
+      width: 300px;
+    }
+    .date-input {
+      width: 300px;
+    }
+    .prio-buttons {
+      width: 100px;
+      font-size: 16px;
+    }
+    .category-menu {
+      width: 300px;
+    }
+    .subtasks-field {
+      width: 245px;
+      border: 1px solid #d1d1d1;
+    }
+    .bottom-buttons {
+      justify-content: start;
+    }
+    .create-subtask {
+      width: 335px;
+    }
+    .add-task-contacts {
+      width: 335px;
+    }
+    .category-options {
+      width: 335px;
+    }
+  }
+  
+  @media (max-width: 1090px) {
+    .add-task-bottom {
+      width: 653px;
+    }
+    .headline {
+      font-size: 50px;
+    }
+    .category-options {
+      width: 285px;
+    }
+    .title {
+      width: 243px;
+    }
+    .left-section textarea {
+      width: 250px;
+    }
+    .select-contact {
+      width: 250px;
+    }
+    .date-input {
+      width: 250px;
+    }
+    .prio-buttons {
+      width: 84px;
+      font-size: 12px;
+      gap: 4px;
+    }
+    .category-menu {
+      width: 250px;
+    }
+    .subtasks-field {
+      width: 195px;
+      border: 1px solid #d1d1d1;
+    }
+    .buttons img {
+      width: 16px;
+      height: auto;
+    }
+    .create-subtask {
+      width: 287px;
+    }
+    .select-contact span {
+      font-size: 14px;
+    }
+    .add-task-contacts {
+      width: 285px;
+    }
+  }
+  
+  @media (max-width: 1050px) {
+    .add-task-section {
+      margin-left: 40px;
+    }
+    .add-task-bottom {
+      width: 850px;
+    }
+    .category-options {
+      width: 385px;
+    }
+    .title {
+      width: 342px;
+    }
+    .left-section textarea {
+      width: 350px;
+    }
+    .select-contact {
+      width: 350px;
+    }
+    .date-input {
+      width: 350px;
+    }
+    .category-menu {
+      width: 350px;
+    }
+    .subtasks-field {
+      width: 295px;
+      border: 1px solid #d1d1d1;
+    }
+    .prio-buttons {
+      width: 117px;
+      font-size: 20px;
+      gap: 8px;
+    }
+    .buttons img {
+      width: 20px;
+      height: auto;
+    }
+    .create-subtask {
+      width: 385px;
+    }
+    .select-contact span {
+      font-size: 20px;
+    }
+    .add-task-contacts {
+      width: 385px;
+      height: 180px;
+    }
+  }
+  
+  @media (max-width: 900px) {
+    .headline {
+      font-size: 50px;
+    }
+    .right-section {
+      margin-left: 20px;
+    }
+    .right-section-layer {
+      margin-left: 20px !important;
+    }
+  
+    .add-task-section {
+      margin-left: 40px;
+    }
+    .add-task-bottom {
+      width: 635px;
+    }
+    .category-options {
+      width: 285px;
+    }
+    .title {
+      width: 243px;
+    }
+    .left-section textarea {
+      width: 250px;
+    }
+    .select-contact {
+      width: 250px;
+    }
+    .date-input {
+      width: 250px;
+    }
+    .category-menu {
+      width: 250px;
+    }
+    .subtasks-field {
+      width: 195px;
+    }
+    .prio-buttons {
+      width: 84px;
+      font-size: 12px;
+      gap: 4px;
+    }
+    .buttons img {
+      width: 16px;
+    }
+    .create-subtask {
+      width: 285px;
+    }
+    .select-contact span {
+      font-size: 16px;
+    }
+    .add-task-contacts {
+      top: 601px;
+      width: 285px;
+      height: 180px;
+    }
+    .add-task-contacts-layer {
+      top: 555px !important;
+      height: 120px !important;
+    }
+    .clear-button {
+      padding: 12px;
+      font-size: 16px;
+      gap: 2px;
+    }
+    .create-task-button {
+      padding: 16px;
+      font-size: 16px;
+      gap: 4px;
+    }
+  }
+  @media (max-width: 800px) {
+    .select-contact-edit span {
+      font-size: 12px !important;
+    }
+    .add-task-contacts-edit {
+      position: relative !important;
+      top: auto !important;
+      width: 235px !important;
+    }
+    .add-task-contacts-layer {
+      top: 505px !important;
+      height: 120px !important;
+    }
+    .show-task-contact-letters {
+      width: 30px;
+      height: 30px;
+    }
+    .show-task-contact-add-task p {
+      font-size: 12px;
+    }
+    .checkbox {
+      width: 12px;
+      height: 12px;
+    }
+    .pos-relative {
+      width: 240px !important;
+    }
+  }
+  @media (max-width: 700px) {
+    .headline {
+      font-size: 41px !important;
+      margin-bottom: 32px;
+    }
+    .parting-line {
+      margin-left: 20px;
+    }
+  
+    .add-task-section {
+      margin-left: 40px;
+    }
+    .add-task-bottom {
+      width: 512px;
+    }
+    .category-options {
+      width: 235px;
+    }
+    .title {
+      width: 193px;
+    }
+    .left-section textarea {
+      width: 200px;
+    }
+    .select-contact {
+      width: 200px;
+    }
+    .date-input {
+      width: 200px;
+    }
+    .category-menu {
+      width: 200px;
+    }
+    .category-menu span {
+      font-size: 16px;
+    }
+    .subtasks-field {
+      width: 145px;
+    }
+    .prio-buttons {
+      width: 67px;
+    }
+    .buttons img {
+      width: 16px;
+    }
+    .create-subtask {
+      width: 235px;
+    }
+    .select-contact span {
+      font-size: 14px;
+    }
+    .add-task-contacts {
+      top: 592px;
+      width: 235px;
+      height: 180px;
+    }
+    .add-task-contacts-layer {
+      top: 505px !important;
+      height: 120px !important;
+    }
+    .clear-button {
+      padding: 12px;
+      font-size: 14px;
+      gap: 2px;
+    }
+    .create-task-button {
+      padding: 12px;
+      font-size: 14px;
+      gap: 2px;
+    }
+    .subtask-layout input::placeholder {
+      font-size: 18px;
+    }
+    .closeAndCheck img {
+      width: 20px;
+    }
+    .closeAndCheck {
+      margin-left: -63px;
+    }
+    .subtasks-field {
+      font-size: 16px;
+    }
+    .subtask-list-element {
+      font-size: 14px;
+    }
+    .subtask-list-icons img {
+      width: 20px;
+    }
+    .show-task-contact-add-task p {
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .show-task-contact-add-task {
+      gap: 8px;
+    }
+  }
+  
+  @media (max-width: 581px) {
+    body {
+      overflow-x: hidden;
+    }
+    .add-task-content {
+      flex-direction: column;
+    }
+    .right-section {
+      margin-top: 0;
+      margin-left: 0;
+    }
+    .right-section-layer {
+      margin-left: 0 !important;
+    }
+    .show-task-contact-add-task p {
+      font-size: 20px;
+      font-weight: 400;
+    }
+    .show-task-contact-add-task {
+      gap: 16px;
+    }
+    .subtask-list-element {
+      font-size: 16px;
+    }
+    .add-task-contacts {
+      width: 385px;
+      top: 592px;
+    }
+    .add-task-contacts-layer {
+      position: static !important;
+    }
+    .category-menu span {
+      font-size: 16px;
+    }
+    .right-section p {
+      margin-top: 24px;
+    }
+    .add-task-section {
+      flex-direction: column;
+      margin-bottom: 300px;
+    }
+    .add-task-section-layer {
+      align-items: center;
+    }
+    .parting-line {
+      display: none;
+    }
+    .bottom-buttons {
+      margin-top: 0;
+    }
+    .create-subtask {
+      width: 385px;
+    }
+    .required-text {
+      display: none;
+    }
+    .select-contact span {
+      font-size: 20px;
+    }
+    .required-text-mobile {
+      background-color: #f6f7f8;
+      height: 70px;
+      bottom: 80px;
+      position: fixed;
+      display: flex;
+      width: 100%;
+      align-items: center;
+      z-index: 1000;
+    }
+    .required-text-mobile-layer {
+      background-color: white !important;
+      margin-left: 0 !important;
+      position: relative !important;
+      margin-bottom: 0 !important;
+      justify-content: space-between !important;
+      width: 383px !important;
+    }
+    .required-text-mobile-layer p,
+    .required-text-mobile p {
+      font-size: 14px !important;
+    }
+    .create-task-button-mobile-layer {
+      padding: 8px !important;
+      font-size: 14px !important;
+      gap: 2px !important;
+    }
+    .clear-button {
+      display: none;
+    }
+    .create-task-button {
+      display: none;
+    }
+    .category-options {
+      width: 385px;
+      position: relative;
+      display: flex;
+    }
+    .create-task-button-mobile {
+      font-weight: 700 !important;
+      color: white;
+      background-color: #2a3647;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid black;
+      padding: 10px;
+      font-size: 21px;
+      line-height: 25.2px;
+      gap: 2px;
+      cursor: pointer;
+      margin-left: 74px;
+    }
+    .add-task-bottom {
+      width: 400px;
+    }
+    .mobile-create {
+      display: flex;
+      align-items: center;
+    }
+    .title {
+      width: 343px;
+    }
+    .left-section textarea {
+      width: 350px;
+    }
+    .select-contact {
+      width: 350px;
+    }
+    .closeAndCheck img {
+      width: 24px;
+    }
+    .date-input {
+      width: 350px;
+    }
+    .category-menu {
+      width: 350px;
+    }
+    .category-menu span {
+      font-size: 20px;
+    }
+    .subtasks-field {
+      width: 297px;
+    }
+    .prio-buttons {
+      width: 116px;
+      font-size: 20px;
+      gap: 8px;
+    }
+    .prio-buttons img {
+      width: 20px;
+    }
+    .scroll {
+      overflow-y: scroll;
+      height: 65vh;
+    }
+    .pos-relative-add {
+      position: relative;
+      height: auto;
+      max-height: 100px;
+      width: 240px !important;
+    }
+  }
+  
+  @media (max-width: 461px) {
+    .show-task-contact-add-task p {
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .show-task-contact-add-task {
+      gap: 8px;
+    }
+    .category-menu span {
+      font-size: 16px;
+    }
+    .add-task-section {
+      margin-left: 20px;
+    }
+    .create-subtask {
+      width: 272px;
+    }
+    .select-contact span {
+      font-size: 16px;
+    }
+    .required-text-mobile {
+      height: 100px;
+    }
+    .required-text-mobile-layer {
+      width: 275px !important;
+    }
+    .clear-button {
+      display: none;
+    }
+    .create-task-button {
+      display: none;
+    }
+    .category-options {
+      width: 272px;
+      position: relative;
+      display: flex;
+    }
+    .create-task-button-mobile {
+      padding: 8px;
+      font-size: 14px;
+      gap: 2px;
+      margin-left: 12px;
+      width: 150px;
+    }
+    .button-small {
+      width: 120px;
+      padding: 3px;
+    }
+    .required-text-mobile p {
+      font-size: 14px;
+    }
+    .mobile-create {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-direction: row;
+    }
+    .title {
+      width: 233px;
+    }
+    .left-section textarea {
+      width: 240px;
+    }
+    .select-contact {
+      width: 240px;
+    }
+    .closeAndCheck img {
+      width: 24px;
+    }
+    .date-input {
+      width: 240px;
+    }
+    .category-menu {
+      width: 240px;
+    }
+    .category-menu span {
+      font-size: 20px;
+    }
+    .subtasks-field {
+      width: 187px;
+    }
+    .prio-buttons {
+      width: 81px;
+      font-size: 14px;
+      gap: 4px;
+    }
+    .prio-buttons img {
+      width: 16px;
+      height: auto;
+    }
+    .add-task-contacts {
+      top: 592px;
+      width: 272px;
+      height: 180px;
+    }
+  }

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contacts</title>
+  <link rel="icon" href="../img/logo.svg">
+  <link rel="stylesheet" href="../css/fonts.css">
+  <link rel="stylesheet" href="../css/desktop_template.css">
+  <link rel="stylesheet" href="../css/contacts.css">
+  <link rel="stylesheet" href="./css/mobile_template.css">
+</head>
+
+<body onload="contactsInit()">
+
+  <header>
+    <div class="header-content">
+      <img onclick="goToSummary()" style="cursor: pointer" class="d-none" src="img/logo-dark.png" alt="">
+      <p>Kanban Project Management Tool</p>
+      <div class="header-icons">
+        <img onclick="goToHelp()" class="header-help" src="../img/help.svg" alt="questionmark" />
+        <div id="user-logo" onclick="toggleMenu()" class="header-user-name"></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="user-content" id="user-content">
+    <a onclick="goToLegalNotice()" href="#">Legal Notice</a>
+    <a onclick="goToPrivacyPolicy()" href="#">Privacy Policy</a>
+    <a onclick="logOut()" href="index.html">Log Out</a>
+  </div>
+
+
+  <div class="sidebar">
+
+    <img onclick="goToSummary()" src="../img/logo.svg" alt="" class="sidebar-logo" />
+    <div class="sidebar-menu">
+      <a href="#" class="sidebar-links" onclick="goToSummary()" id="link-summary">
+        <img src="../img/sidebar_summary.svg" alt="" />Summary
+      </a>
+      <a href="#" class="sidebar-links" onclick="goToTask()" id="link-task">
+        <img src="../img/edit_square.svg" alt="" />Add Task
+      </a>
+      <a href="#" class="sidebar-links" onclick="goToBoard()" id="link-board">
+        <img src="../img/sidebar_board.svg" alt="" />Board
+      </a>
+      <a href="#" class="sidebar-links" onclick="goToContacts()" id="link-contacts">
+        <img src="../img/sidebar_contacts.svg" alt="" />Contacts
+      </a>
+    </div>
+    <div class="sidebar-menu-bottom">
+      <a id="link-privacy-policy" onclick="goToPrivacyPolicy()" href="#">Privacy Policy</a>
+      <a id="link-legal-notice" onclick="goToLegalNotice()" href="#">Legal Notice</a>
+    </div>
+
+  </div>
+
+  <div class="contacts-library" id="contacts-library">
+    <!-- Der Container ist für Responsive-->
+    <div class="responsive-add-contact" onclick="openAddContactLayer()">
+      <img src="./img/person_add.svg" alt="">
+    </div>
+    <div class="button-add-contact" onclick="openAddContactLayer()">
+      Add new contact
+      <img src="img/person_add.svg" alt="">
+    </div>
+    <div id="contacts-list" class="contacts-list">
+
+    </div>
+  </div>
+
+
+
+  <div class="contact-details-container">
+    <a class="back" href="contacts.html">
+      <img class="arrow" src="./img/arrow-left-line.svg" />
+    </a>
+    <div class="contact-headline">
+      <h1>Contacts</h1>
+      <div class="blue-vertical-line"></div>
+      <h2 class="subheadline">Better with a team</h2>
+    </div>
+
+    <div id="contact-profile" class="contact-profile"></div>
+  </div>
+
+  <!-- ADD CONTACT LAYER -->
+
+  <div class="add-contact-layer d-none" id="add-contact-layer">
+    <div class="add-contact-inner-layer" id="add-contact-inner-layer">
+      <div class="add-contact-left" onclick="closeAddContactLayer()">
+        <img class="close-symbol" src="img/close-white.svg" alt="add-contact-layer-close">
+        <img src="img/logo.svg" alt="join-logo">
+        <h1>Add Contact</h1>
+        <h2>Tasks are better with a team</h2>
+        <div class="add-layer-line"></div>
+      </div>
+      <div class="add-contact-right">
+        <div class="add-contact-layer-close" onclick="closeAddContactLayer()">
+          <img src="img/add-contact-close.svg" alt="add-contact-layer-close">
+        </div>
+        <div class="add-contact-data">
+          <div class="default-contact">
+            <img src="img/add-contact-person.svg" alt="">
+          </div>
+          <div class="add-contact-form">
+            <form onsubmit="addContact(); return false">
+              <div class="input-container">
+                <input placeholder="Name" id="add-contact-name" required type="text" pattern="^[A-Za-z]+ [A-Za-z]+.*$"
+                  title="Please enter at least a first name and a last name">
+                <img class="icon" src="img/add-contact-form-person.svg" alt="user icon">
+              </div>
+              <div class="input-container">
+                <input placeholder="Email" id="add-contact-mail" required type="email">
+                <img class="icon" src="img/add-contact-form-mail.svg" alt="email icon">
+              </div>
+              <div class="input-container">
+                <input placeholder="Phone" id="add-contact-phone" required type="tel"
+                  pattern="^(\+49\s?\(?0?\)?\s?\d{3}\s?\d{1,}|^\d{4}\s?\d{1,})$"
+                  title="Please enter a valid phone number in one of the following formats: 01626963474, 0162 6963474, +49 162 6963474, +49 (0)162 6963474">
+
+                <img class="icon" src="img/add-contact-form-phone.svg" alt="phone icon">
+              </div>
+              <div class="button-group">
+                <button class="button-bright" type="button" onclick="closeAddContactLayer()">Cancel <img
+                    class="contact-icon" src="img/add-contact-close.svg" alt=""></button>
+                <button class="button-dark button-dark-contact" type="submit">Create contact <img
+                    src="img/add-contact-check.svg" alt=""></button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT CONTACT LAYER -->
+
+  <div class="add-contact-layer d-none" id="edit-contact-layer">
+    <div class="add-contact-inner-layer" id="edit-contact-inner-layer">
+      <div class="add-contact-left" onclick="closeEditContactLayer()">
+        <img class="close-symbol" src="img/close-white.svg" alt="add-contact-layer-close">
+        <img src="img/logo.svg" alt="join-logo">
+        <h1>Edit Contact</h1>
+
+        <div class="add-layer-line"></div>
+      </div>
+      <div class="add-contact-right">
+        <div class="add-contact-layer-close" onclick="closeEditContactLayer()">
+          <img src="img/add-contact-close.svg" alt="add-contact-layer-close">
+        </div>
+        <div class="add-contact-data">
+          <div class="default-contact">
+            <img src="img/add-contact-person.svg" alt="">
+          </div>
+          <div class="add-contact-form">
+            <form onsubmit="saveContact(); return false">
+              <input type="hidden" id="edit-contact-key">
+              <div class="input-container">
+                <input placeholder="Name" id="edit-contact-name" required type="text" pattern="^[A-Za-z]+ [A-Za-z]+.*$"
+                  title="Please enter at least a first name and a last name">
+                <img class="icon" src="img/add-contact-form-person.svg" alt="user icon">
+              </div>
+              <div class="input-container">
+                <input placeholder="Email" id="edit-contact-mail" required type="email">
+                <img class="icon" src="img/add-contact-form-mail.svg" alt="email icon">
+              </div>
+              <div class="input-container">
+                <input placeholder="Phone" id="edit-contact-phone" required type="tel"
+                  pattern="^(\+49\s?\(?0?\)?\s?\d{3}\s?\d{1,}|^\d{4}\s?\d{1,})$"
+                  title="Please enter a valid phone number in one of the following formats: 01626963474, 0162 6963474, +49 162 6963474, +49 (0)162 6963474">
+                <img class="icon" src="img/add-contact-form-phone.svg" alt="phone icon">
+              </div>
+              <div class="button-group">
+                <button class="button-bright" type="button" onclick="closeEditContactLayer()">Cancel <img
+                    class="contact-icon" src="img/add-contact-close.svg" alt=""></button>
+                <button class="button-dark button-dark-contact" type="submit">Save<img src="img/add-contact-check.svg"
+                    alt=""></button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script src="script.js"></script>
+  <script src="js/getHTML.js"></script>
+  <script src="js/contacts.js"></script>
+
+</body>
+
+</html>

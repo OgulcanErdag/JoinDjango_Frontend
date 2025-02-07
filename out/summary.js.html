@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: summary.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: summary.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * This function initializes the summary html.
+ */
+async function summaryInit() {
+    await fetchTasksJson();
+    generateCounts();
+    generateGreets();
+    generateUpcomingDate();
+    generateInitials();
+}
+
+/**
+ * This function defines and generates the numbers for counting the tasks in the different categories.
+ */
+function generateCounts() {
+    let toDo = document.getElementById('toDoCount');
+    let done = document.getElementById('doneCount');
+    let inProgress = document.getElementById('inProgressCount');
+    let awaitFeedback = document.getElementById('awaitFeedbackCount');
+    let urgent = document.getElementById('urgentCount');
+    let allTasks = document.getElementById('allTasks');
+
+    toDo.innerHTML = counter('to-do');
+    done.innerHTML = counter('done');
+    inProgress.innerHTML = counter('in-progress');
+    awaitFeedback.innerHTML = counter('await-feedback');
+    urgent.innerHTML = countUrgentTasks();
+    allTasks.innerHTML = countAllTasks();
+}
+
+/**
+ * This function calculates the number of tasks in a category.
+ * @param {string} category - board category
+ * @returns number of tasks in a category
+ */
+function counter(category) {
+    return tasksArray.filter(task => task.board_category === category).length;
+}
+
+/**
+ * This function calculates the number of urgent tasks.
+ * @returns number of urgent tasks
+ */
+function countUrgentTasks() {
+    return tasksArray.filter(task => task.prio === 'urgent').length;
+}
+
+/**
+ * This function calculates the number of all tasks.
+ * @returns number of all tasks
+ */
+function countAllTasks() {
+    return tasksArray.length;
+}
+
+
+/**
+ * This function fills the variables of the greeting container like daytime and name of the logged in user.
+ */
+function generateGreets() {
+    let greetingTime = getGreeting();
+    let userName = sessionStorage.getItem('userName');
+    let content = document.getElementById('greeting-container');
+    
+    if (window.innerWidth &lt;= 800) {
+        if (content) {
+            content.parentNode.removeChild(content);
+        }
+    } else {
+        if (content) {
+            content.innerHTML = userName === "Guest" 
+                ? `&lt;span class="greet-text">Good ${greetingTime}!&lt;/span>` 
+                : `&lt;span class="greet-text">Good ${greetingTime},&lt;/span>
+                   &lt;span class="greet-user-name">${userName}&lt;/span>`;
+        }
+    }
+}
+
+/**
+ * This function generates the greeting dependant on the date time
+ * @returns greeting dependant on the date time
+ */
+function getGreeting() {
+    let now = new Date();
+    let hours = now.getHours();
+    if (hours >= 5 &amp;&amp; hours &lt; 12) return "morning";
+    if (hours >= 12 &amp;&amp; hours &lt; 18) return "afternoon";
+    if (hours >= 18 &amp;&amp; hours &lt; 22) return "evening";
+    return "night";
+}
+
+
+/**
+ * This function generates the due date of the most urgent task.
+ */
+function generateUpcomingDate() {
+    let content = document.getElementById('upcomingDate');
+    content.innerHTML = getClosestUrgentDueDate();
+}
+
+/**
+ * This function calculates the due date of the most urgent task.
+ * @returns the due date of the most urgent task.
+ */
+function getClosestUrgentDueDate() {
+    let urgentTasks = tasksArray.filter(task => task.prio === 'urgent');
+    if (urgentTasks.length === 0) return '';
+
+    let currentDate = new Date();
+    let closestDate = null;
+    let minDifference = Infinity;
+
+    urgentTasks.forEach(task => {
+        let dueDate = new Date(task.due_date);
+        let difference = dueDate - currentDate;
+        if (difference >= 0 &amp;&amp; difference &lt; minDifference) {
+            minDifference = difference;
+            closestDate = dueDate;
+        }
+    });
+
+    if (closestDate) {
+        let options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return closestDate.toLocaleDateString('en-US', options);
+    } else {
+        return '';
+    }
+}
+
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    const animationScreen = document.getElementById('animationScreen');
+    const summaryCardContainer = document.querySelector('.summary-card-container');
+    if (window.innerWidth >= 800) {
+        localStorage.setItem('greetingShown', 'true');
+    }
+
+    if (window.innerWidth &lt;= 800) {
+        if (!localStorage.getItem('greetingShown')) {
+            localStorage.setItem('greetingShown', 'true');
+            if (animationScreen) {
+                let greetingTime = getGreeting();
+                let userName = sessionStorage.getItem('userName');
+                animationScreen.innerHTML = userName === "Guest" 
+                    ? `&lt;span class="greet-text">Good ${greetingTime}&lt;/span>` 
+                    : `&lt;div class="greeting-user-animation">&lt;span class="greet-text">Good ${greetingTime},&lt;/span>
+                       &lt;span class="greet-user-name">${userName}&lt;/div>&lt;/span>`;
+                       
+                animationScreen.classList.remove('hidden');
+                animationScreen.classList.add('fadeIn');
+                setTimeout(() => {
+                    animationScreen.classList.remove('fadeIn');
+                    animationScreen.classList.add('fadeOut');
+                    setTimeout(() => {
+                        animationScreen.classList.add('hidden');
+                        if (summaryCardContainer) {
+                            summaryCardContainer.classList.add('visible');
+                        }
+                    }, 1000); 
+                }, 1000); 
+            }
+        } else {
+            if (summaryCardContainer) {
+                summaryCardContainer.classList.add('visible');
+            }
+            
+        }
+    } else {
+        if (summaryCardContainer) {
+            summaryCardContainer.classList.add('visible');
+        }
+    }
+});
+
+
+
+function logout() {
+    localStorage.removeItem('greetingShown');  
+}
+
+let hasRefreshed = false;
+let lastWidth = window.innerWidth;
+
+
+
+function checkWidthAndReload() {
+    const width = window.innerWidth;
+
+    // Check if the width is within the range and has not already refreshed
+    if (width >= 800 &amp;&amp; width &lt;= 810 &amp;&amp; !hasRefreshed) {
+        hasRefreshed = true;
+        location.reload();
+    }
+
+    // Update the last width
+    lastWidth = width;
+}
+
+window.addEventListener('resize', function() {
+    // Only check the width if it has changed significantly
+    if (Math.abs(window.innerWidth - lastWidth) >= 10 &amp;&amp; !hasRefreshed) {
+        checkWidthAndReload();
+    }
+});
+
+window.addEventListener('load', function() {
+    checkWidthAndReload();
+});</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#countAllTasks">countAllTasks</a></li><li><a href="global.html#countUrgentTasks">countUrgentTasks</a></li><li><a href="global.html#counter">counter</a></li><li><a href="global.html#generateCounts">generateCounts</a></li><li><a href="global.html#generateGreets">generateGreets</a></li><li><a href="global.html#generateUpcomingDate">generateUpcomingDate</a></li><li><a href="global.html#getClosestUrgentDueDate">getClosestUrgentDueDate</a></li><li><a href="global.html#getGreeting">getGreeting</a></li><li><a href="global.html#summaryInit">summaryInit</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Fri Jul 26 2024 11:57:24 GMT+0200 (Mitteleuropäische Sommerzeit)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

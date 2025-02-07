@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal Notice</title>
+    
+    <link rel="icon" href="../img/logo.svg">
+    <link rel="stylesheet" href="css/fonts.css">
+    <link rel="stylesheet" href="css/desktop_template.css">
+    <link rel="stylesheet" href="legal_notice.css">
+    <link rel="stylesheet" href="privacy_policy.css">
+
+    <script src="script.js"></script>
+    <script src="js/getHTML.js"></script>
+
+</head>
+
+<body onload="generateInitials()">
+    <script src="privacy_policy.js"></script>
+
+    <header>
+        <div class="header-content">
+            <img onclick="goToSummary()" style="cursor: pointer" class="d-none" src="img/logo-dark.png" alt="">
+            <p>Kanban Project Management Tool</p>
+            <div class="header-icons">
+                <img onclick="goToHelp()" class="header-help" src="../img/help.svg" alt="questionmark" />
+                <div id="user-logo" onclick="toggleMenu()" class="header-user-name"></div>
+            </div>
+        </div>
+    </header>
+
+    <div class="user-content" id="user-content">
+        <a onclick="goToLegalNotice()" href="#">Legal Notice</a>
+        <a onclick="goToPrivacyPolicy()"href="#">Privacy Policy</a>
+        <a onclick="logOut()" href="index.html">Log Out</a>
+    </div>
+
+
+    <div class="legal-notice">
+        <div class="title">
+            <h1>Impressum</h1>
+            <a onclick="goToSummary()" id="backSummaryRules" class="back" href="#">
+                <img class="arrow" src="../img/arrow-left-line.svg" />
+            </a>
+        </div>
+        <div class="text">
+            <p>
+                Ogulcan Erdag<br />
+                Friedrichsdorfer Straße 8<br />
+                Geb&auml;ude 44<br />
+                99427 Weimar
+            </p>
+            <h3>Kontakt</h3>
+            <p>
+                Telefon: +49 (03643) 750-0<br />
+                Telefax: +49 (03643) 750-1<br />
+                E-Mail: joingmbh@info.de
+            </p>
+            <h3>Redaktionell verantwortlich</h3>
+            <p>
+                Ogulcan Erdag<br />
+                Friedrichsdorfer Straße 8<br />
+                99427 Weimar
+            </p>
+            <p>Quelle: <a href="https://www.e-recht24.de">eRecht24</a></p>
+        </div>
+    </div>
+
+
+    <div class="sidebar">
+        <img onclick="goToSummary()" src="../img/logo.svg" alt="" class="sidebar-logo" />
+        <div class="sidebar-menu">
+            <a href="#" class="sidebar-links" onclick="goToSummary()" id="link-summary">
+                <img src="../img/sidebar_summary.svg" alt="" />Summary
+            </a>
+            <a href="#" class="sidebar-links" onclick="goToTask()" id="link-task">
+                <img src="../img/edit_square.svg" alt="" />Add Task
+            </a>
+            <a href="#" class="sidebar-links" onclick="goToBoard()" id="link-board">
+                <img src="../img/sidebar_board.svg" alt="" />Board
+            </a>
+            <a href="#" class="sidebar-links" onclick="goToContacts()" id="link-contacts">
+                <img src="../img/sidebar_contacts.svg" alt="" />Contacts
+            </a>
+        </div>
+        <div class="sidebar-menu-bottom">
+            <a id="link-privacy-policy" onclick="goToPrivacyPolicy()" href="#">Privacy Policy</a>
+            <a id="link-legal-notice" onclick="goToLegalNotice()" href="#">Legal Notice</a>
+        </div>
+    </div>
+
+</body>
+
+</html>
