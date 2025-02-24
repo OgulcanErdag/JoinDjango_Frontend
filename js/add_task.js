@@ -1,6 +1,7 @@
 let subtasks = [];
-let selectedContacts = [];
+let selectedContacts = {};
 let currentTaskIndex = 0;
+let lastCreatedTask = null;
 
 const contactDropdown = document.getElementById("add-task-contacts");
 const categoryDropdown = document.getElementById("category");
@@ -126,18 +127,35 @@ async function initializeAddTask() {
  */
 function clearTask() {
   let description = document.getElementById("description-input");
-  description.value = "";
+  if (description) description.value = "";
+
   let dueDate = document.getElementById("date-input");
-  dueDate.value = "";
-  dueDate.style.color = "#d1d1d1";
-  document.getElementById("add-task-contacts").classList.add("d-none");
+  if (dueDate) {
+    dueDate.value = "";
+    dueDate.style.color = "#d1d1d1";
+  }
+
+  let contactsDiv = document.getElementById("add-task-contacts");
+  if (contactsDiv) contactsDiv.classList.add("d-none");
+
   clearButtons();
   clearSubtasks();
   clearContacts();
+
   let taskCategory = document.getElementById("task-category");
-  taskCategory.innerText = "Select task category";
+  if (taskCategory) taskCategory.innerText = "Select task category";
+
   let title = document.getElementById("title-input");
-  title.value = "";
+  if (title) title.value = "";
+
+  let contactContainer = document.getElementById("add-task-contactsHTML");
+  if (contactContainer) contactContainer.innerHTML = ""; // Löscht die Kontakte
+
+  let categoryDropdown = document.getElementById("task-category");
+  if (categoryDropdown) categoryDropdown.value = ""; // Setzt die Kategorie auf leer zurück
+
+  let subtaskContainer = document.getElementById("subtask-container");
+  if (subtaskContainer) subtaskContainer.innerHTML = ""; // Löscht alle Subtasks
 }
 
 /**
@@ -265,20 +283,27 @@ async function validateTaskInputs() {
 function buildNewTask(boardCategory) {
   let description = document.getElementById("description-input").value;
   let dueDate = document.getElementById("date-input").value;
-  let prio = getSelectedPrio();
+  let priority = getSelectedPrio();
   let taskCategory = document.getElementById("task-category").innerText;
   let title = document.getElementById("title-input").value;
 
   return {
     board_category: boardCategory,
-    contacts: getSelectedContactsData(),
+    contact_ids: getSelectedContactIds(),
     description: description,
     due_date: dueDate,
-    prio: prio,
+    priority: priority,
     subtasks: getSubtasksData(),
     task_category: taskCategory,
     title: title,
   };
+}
+
+function getSelectedContactIds() {
+  let selectedIds = Array.from(document.querySelectorAll(".contact-checkbox:checked"))
+    .map(checkbox => parseInt(checkbox.dataset.contactId));
+
+  return selectedIds;
 }
 
 /**
@@ -288,20 +313,64 @@ function buildNewTask(boardCategory) {
  * @returns {Promise<void>} A promise that resolves when the task creation process is complete.
  */
 async function createTask(boardCategory) {
-  if (!(await validateTaskInputs())) {
-    return;
+  try {
+
+    if (!boardCategory) {
+      throw new Error("❌ Fehler: boardCategory ist nicht gesetzt!");
+    }
+
+    let contactIds = getSelectedContactIds();
+
+    let newTask = {
+      board_category: boardCategory,
+      contact_ids: contactIds,
+      description: document.getElementById("description-input").value,
+      due_date: document.getElementById("date-input").value,
+      priority: getSelectedPrio(),
+      subtasks: getSubtasksData(),
+      task_category: document.getElementById("task-category").innerText,
+      title: document.getElementById("title-input").value,
+    };
+
+    const response = await fetch("http://127.0.0.1:8000/api/tasks/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Token ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify(newTask),
+    });
+
+    if (!response.ok) {
+      throw new Error(`❌ Fehler beim Erstellen des Tasks: ${response.statusText}`);
+    }
+
+    const createdTask = await response.json();
+
+    await addedToBoard();
+    await boardInit();
+    clearTask();
+    setTimeout(() => {
+      document.getElementById("added-to-board").classList.remove("animate");  // ❌ Meldung ausblenden
+    }, 1000);
+
+  } catch (error) {
+    console.error("Fehler in createTask:", error);
   }
-
-  await addedToBoard();
-
-  let newTask = buildNewTask(boardCategory);
-  let postResponse = await postTask("", newTask);
-
-  goToBoard();
-  await boardInit();
-
-  subtasks = [];
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * Gets the selected priority level.
@@ -327,21 +396,43 @@ function getSelectedPrio() {
  * @param {string} userName 
  * @returns HTML code for add task contacts
  */
-function generateContactHTML(contact, i, userName) {
-  let checkboxSrc = selectedContacts[i] ? "add_task_img/checkbox-normal-checked.svg" : "add_task_img/checkbox-normal.svg";
-
+function generateContactHTML(contact) {
+  let isChecked = selectedContacts[contact.id] ? "checked" : "";
   let displayName = contact.name;
-  if (contact.name === userName) {
-    displayName += " (You)";
-  }
 
-  return `<div id="contacts-pos${i}" onclick="checkContacts(${i})" class="contacts-pos">
+  return `<div id="contacts-pos${contact.id}" class="contacts-pos">
             <div class="show-task-contact-add-task">
-                <div class="show-task-contact-letters" style="background-color: ${contact.color};">${getInitials(contact.name)}</div>
+                <div class="show-task-contact-letters" style="background-color: ${contact.color};">
+                    ${getInitials(contact.name)}
+                </div>
                 <p>${displayName}</p>
             </div>
-            <div class="checkbox">
-                <img id="checkbox-field${i}" src="${checkboxSrc}" alt="">
+
+            <div class="checkbox" onclick="checkContacts(${contact.id})">
+                <input type="checkbox" class="contact-checkbox" id="checkbox-field${contact.id}" 
+                data-contact-id="${contact.id}" ${isChecked} hidden">
+                <img id="checkbox-img-${contact.id}" src="add_task_img/checkbox-normal.svg" alt="checkbox">
             </div>
         </div>`;
 }
+
+function logOut() {
+  sessionStorage.clear();
+  localStorage.removeItem("token");
+  localStorage.removeItem("userProfile");
+  localStorage.removeItem("userEmail");
+  localStorage.removeItem("userName");
+  localStorage.removeItem("rememberMe");
+  localStorage.removeItem("email");
+  localStorage.removeItem("password");
+
+  if (document.getElementById("loginEmail")) {
+    document.getElementById("loginEmail").value = "";
+  }
+  if (document.getElementById("loginPassword")) {
+    document.getElementById("loginPassword").value = "";
+  }
+
+  window.location.href = "index.html";
+}
+

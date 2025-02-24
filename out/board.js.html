@@ -1,32 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>JSDoc: Source: board.js</title>
 
-    <script src="scripts/prettify/prettify.js"> </script>
-    <script src="scripts/prettify/lang-css.js"> </script>
-    <!--[if lt IE 9]>
+<head>
+  <meta charset="utf-8">
+  <title>JSDoc: Source: board.js</title>
+
+  <script src="scripts/prettify/prettify.js"> </script>
+  <script src="scripts/prettify/lang-css.js"> </script>
+  <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+  <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+  <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
 </head>
 
 <body>
 
-<div id="main">
+  <div id="main">
 
     <h1 class="page-title">Source: board.js</h1>
 
-    
 
 
 
-    
+
+
     <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>const TASKS_URL = "https://join-database-3d39f-default-rtdb.europe-west1.firebasedatabase.app/tasks/";
+      <article>
+        <pre class="prettyprint source linenums"><code>const TASKS_URL = "https://join-database-3d39f-default-rtdb.europe-west1.firebasedatabase.app/tasks/";
 
 let tasksData = {};
 let tasksArray = [];
@@ -160,7 +161,8 @@ function generateContactsHTML(contacts) {
   const displayedContacts = getDisplayedContactsHTML(contacts);
   const remainingContacts = getRemainingContactsHTML(contactCount);
 
-  return displayedContacts + remainingContacts;
+  return `${displayedContacts}${remainingContacts}`;
+
 }
 
 /**
@@ -986,25 +988,87 @@ function closeTask() {
 function taskAnimationEnd() {
   document.getElementById("show-task-layer").classList.add("d-none");
 }</code></pre>
-        </article>
+      </article>
     </section>
 
 
 
 
-</div>
+  </div>
 
-<nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#allowDrop">allowDrop</a></li><li><a href="global.html#animateContent">animateContent</a></li><li><a href="global.html#boardInit">boardInit</a></li><li><a href="global.html#capitalize">capitalize</a></li><li><a href="global.html#checkAndAddNoTask">checkAndAddNoTask</a></li><li><a href="global.html#checkSubtask">checkSubtask</a></li><li><a href="global.html#clearBoards">clearBoards</a></li><li><a href="global.html#closeTask">closeTask</a></li><li><a href="global.html#createTaskOnBoard">createTaskOnBoard</a></li><li><a href="global.html#deleteTask">deleteTask</a></li><li><a href="global.html#drop">drop</a></li><li><a href="global.html#fetchTasksJson">fetchTasksJson</a></li><li><a href="global.html#findTask">findTask</a></li><li><a href="global.html#findTaskMobile">findTaskMobile</a></li><li><a href="global.html#generateContactsHTML">generateContactsHTML</a></li><li><a href="global.html#generateContactsInTaskLayer">generateContactsInTaskLayer</a></li><li><a href="global.html#generateEditTaskLayer">generateEditTaskLayer</a></li><li><a href="global.html#generateSubtasksInTaskLayer">generateSubtasksInTaskLayer</a></li><li><a href="global.html#generateTaskLayer">generateTaskLayer</a></li><li><a href="global.html#generateTaskOnBoardHTML">generateTaskOnBoardHTML</a></li><li><a href="global.html#getAddContactSiteHTML">getAddContactSiteHTML</a></li><li><a href="global.html#getAddContactsHTML">getAddContactsHTML</a></li><li><a href="global.html#getCategoryClass">getCategoryClass</a></li><li><a href="global.html#getDisplayedContactsHTML">getDisplayedContactsHTML</a></li><li><a href="global.html#getEditContactsHTML">getEditContactsHTML</a></li><li><a href="global.html#getEditSubtasksHTML">getEditSubtasksHTML</a></li><li><a href="global.html#getFirstFourAddContacts">getFirstFourAddContacts</a></li><li><a href="global.html#getFirstFourContacts">getFirstFourContacts</a></li><li><a href="global.html#getInitials">getInitials</a></li><li><a href="global.html#getRemainingContactsHTML">getRemainingContactsHTML</a></li><li><a href="global.html#getRestAddContacts">getRestAddContacts</a></li><li><a href="global.html#getRestContacts">getRestContacts</a></li><li><a href="global.html#getSelectedContactsData">getSelectedContactsData</a></li><li><a href="global.html#getSelectedPriority">getSelectedPriority</a></li><li><a href="global.html#getSubtasksObj">getSubtasksObj</a></li><li><a href="global.html#getUpdatedTask">getUpdatedTask</a></li><li><a href="global.html#handlePrio">handlePrio</a></li><li><a href="global.html#handleTaskUpdateSuccess">handleTaskUpdateSuccess</a></li><li><a href="global.html#initializeSelectedContacts">initializeSelectedContacts</a></li><li><a href="global.html#moveTo">moveTo</a></li><li><a href="global.html#openAddTask">openAddTask</a></li><li><a href="global.html#openTask">openTask</a></li><li><a href="global.html#postTask">postTask</a></li><li><a href="global.html#renderFilteredTasks">renderFilteredTasks</a></li><li><a href="global.html#resetBackground">resetBackground</a></li><li><a href="global.html#saveEditContacts">saveEditContacts</a></li><li><a href="global.html#saveTaskChanges">saveTaskChanges</a></li><li><a href="global.html#showEditTask">showEditTask</a></li><li><a href="global.html#showTaskLayer">showTaskLayer</a></li><li><a href="global.html#startDragging">startDragging</a></li><li><a href="global.html#taskAnimationEnd">taskAnimationEnd</a></li><li><a href="global.html#updateContactsHeadline">updateContactsHeadline</a></li><li><a href="global.html#updateContent">updateContent</a></li><li><a href="global.html#updateHeadlineVisibility">updateHeadlineVisibility</a></li><li><a href="global.html#updateSubtasksHeadline">updateSubtasksHeadline</a></li><li><a href="global.html#updateTask">updateTask</a></li><li><a href="global.html#updateTaskAttribute">updateTaskAttribute</a></li></ul>
-</nav>
+  <nav>
+    <h2><a href="index.html">Home</a></h2>
+    <h3>Global</h3>
+    <ul>
+      <li><a href="global.html#allowDrop">allowDrop</a></li>
+      <li><a href="global.html#animateContent">animateContent</a></li>
+      <li><a href="global.html#boardInit">boardInit</a></li>
+      <li><a href="global.html#capitalize">capitalize</a></li>
+      <li><a href="global.html#checkAndAddNoTask">checkAndAddNoTask</a></li>
+      <li><a href="global.html#checkSubtask">checkSubtask</a></li>
+      <li><a href="global.html#clearBoards">clearBoards</a></li>
+      <li><a href="global.html#closeTask">closeTask</a></li>
+      <li><a href="global.html#createTaskOnBoard">createTaskOnBoard</a></li>
+      <li><a href="global.html#deleteTask">deleteTask</a></li>
+      <li><a href="global.html#drop">drop</a></li>
+      <li><a href="global.html#fetchTasksJson">fetchTasksJson</a></li>
+      <li><a href="global.html#findTask">findTask</a></li>
+      <li><a href="global.html#findTaskMobile">findTaskMobile</a></li>
+      <li><a href="global.html#generateContactsHTML">generateContactsHTML</a></li>
+      <li><a href="global.html#generateContactsInTaskLayer">generateContactsInTaskLayer</a></li>
+      <li><a href="global.html#generateEditTaskLayer">generateEditTaskLayer</a></li>
+      <li><a href="global.html#generateSubtasksInTaskLayer">generateSubtasksInTaskLayer</a></li>
+      <li><a href="global.html#generateTaskLayer">generateTaskLayer</a></li>
+      <li><a href="global.html#generateTaskOnBoardHTML">generateTaskOnBoardHTML</a></li>
+      <li><a href="global.html#getAddContactSiteHTML">getAddContactSiteHTML</a></li>
+      <li><a href="global.html#getAddContactsHTML">getAddContactsHTML</a></li>
+      <li><a href="global.html#getCategoryClass">getCategoryClass</a></li>
+      <li><a href="global.html#getDisplayedContactsHTML">getDisplayedContactsHTML</a></li>
+      <li><a href="global.html#getEditContactsHTML">getEditContactsHTML</a></li>
+      <li><a href="global.html#getEditSubtasksHTML">getEditSubtasksHTML</a></li>
+      <li><a href="global.html#getFirstFourAddContacts">getFirstFourAddContacts</a></li>
+      <li><a href="global.html#getFirstFourContacts">getFirstFourContacts</a></li>
+      <li><a href="global.html#getInitials">getInitials</a></li>
+      <li><a href="global.html#getRemainingContactsHTML">getRemainingContactsHTML</a></li>
+      <li><a href="global.html#getRestAddContacts">getRestAddContacts</a></li>
+      <li><a href="global.html#getRestContacts">getRestContacts</a></li>
+      <li><a href="global.html#getSelectedContactsData">getSelectedContactsData</a></li>
+      <li><a href="global.html#getSelectedPriority">getSelectedPriority</a></li>
+      <li><a href="global.html#getSubtasksObj">getSubtasksObj</a></li>
+      <li><a href="global.html#getUpdatedTask">getUpdatedTask</a></li>
+      <li><a href="global.html#handlePrio">handlePrio</a></li>
+      <li><a href="global.html#handleTaskUpdateSuccess">handleTaskUpdateSuccess</a></li>
+      <li><a href="global.html#initializeSelectedContacts">initializeSelectedContacts</a></li>
+      <li><a href="global.html#moveTo">moveTo</a></li>
+      <li><a href="global.html#openAddTask">openAddTask</a></li>
+      <li><a href="global.html#openTask">openTask</a></li>
+      <li><a href="global.html#postTask">postTask</a></li>
+      <li><a href="global.html#renderFilteredTasks">renderFilteredTasks</a></li>
+      <li><a href="global.html#resetBackground">resetBackground</a></li>
+      <li><a href="global.html#saveEditContacts">saveEditContacts</a></li>
+      <li><a href="global.html#saveTaskChanges">saveTaskChanges</a></li>
+      <li><a href="global.html#showEditTask">showEditTask</a></li>
+      <li><a href="global.html#showTaskLayer">showTaskLayer</a></li>
+      <li><a href="global.html#startDragging">startDragging</a></li>
+      <li><a href="global.html#taskAnimationEnd">taskAnimationEnd</a></li>
+      <li><a href="global.html#updateContactsHeadline">updateContactsHeadline</a></li>
+      <li><a href="global.html#updateContent">updateContent</a></li>
+      <li><a href="global.html#updateHeadlineVisibility">updateHeadlineVisibility</a></li>
+      <li><a href="global.html#updateSubtasksHeadline">updateSubtasksHeadline</a></li>
+      <li><a href="global.html#updateTask">updateTask</a></li>
+      <li><a href="global.html#updateTaskAttribute">updateTaskAttribute</a></li>
+    </ul>
+  </nav>
 
-<br class="clear">
+  <br class="clear">
 
-<footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Thu Jul 25 2024 12:12:34 GMT+0200 (Mitteleuropäische Sommerzeit)
-</footer>
+  <footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Thu Jul 25 2024 12:12:34
+    GMT+0200 (Mitteleuropäische Sommerzeit)
+  </footer>
 
-<script> prettyPrint(); </script>
-<script src="scripts/linenumber.js"> </script>
+  <script> prettyPrint(); </script>
+  <script src="scripts/linenumber.js"> </script>
 </body>
+
 </html>

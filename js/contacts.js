@@ -35,10 +35,7 @@ async function fetchDataJson() {
     console.error("❌ Kein Token gefunden! Zugriff verweigert.");
     return;
   }
-
   try {
-    console.log("📡 Sende API-Request mit Token:", token);
-
     let response = await fetch("http://127.0.0.1:8000/api/contacts/", {
       method: "GET",
       headers: {
@@ -52,7 +49,6 @@ async function fetchDataJson() {
     }
 
     let data = await response.json();
-    console.log("✅ Kontakte erfolgreich geladen:", data);
     contactsData = data;
     contactsArray = Object.values(data);
   } catch (error) {
@@ -420,4 +416,24 @@ function getRandomColor() {
     color += letters[Math.floor(Math.random() * 16)];
   }
   return color;
+}
+
+function logOut() {
+  sessionStorage.clear();
+  localStorage.removeItem("token");
+  localStorage.removeItem("userProfile");
+  localStorage.removeItem("userEmail");
+  localStorage.removeItem("userName");
+  localStorage.removeItem("rememberMe");
+  localStorage.removeItem("email");
+  localStorage.removeItem("password");
+
+  if (document.getElementById("loginEmail")) {
+    document.getElementById("loginEmail").value = "";
+  }
+  if (document.getElementById("loginPassword")) {
+    document.getElementById("loginPassword").value = "";
+  }
+
+  window.location.href = "index.html";
 }

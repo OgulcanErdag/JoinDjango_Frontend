@@ -2,14 +2,25 @@
  * This function shows tasks details when clicking on a task card on the board.
  * @param {string} key - task key
  */
-function openTask(key) {
-  const task = tasksData[key];
-  currentTaskKey = key;
+function openTask(taskId) {
+  if (taskId === undefined || taskId === null) {
+    console.error("Fehler: taskId ist undefined oder null!");
+    return;
+  }
+  taskId = Number(taskId);
+
+  const task = tasksArray.find(t => t.id == taskId);
+  if (!task) {
+    console.error("FEHLER: Task nicht gefunden für ID:", taskId);
+    return;
+  }
+
+  currentTaskKey = taskId;
   showTaskLayer();
   let content = document.getElementById("show-task-inner-layer");
   let background = document.getElementById("board-content");
   animateContent(content, background);
-  updateContent(content, task, key);
+  updateContent(content, task, taskId);
   updateHeadlineVisibility();
 }
 
@@ -39,9 +50,9 @@ function animateContent(content, background) {
  * @param {object} task - tasksData[key], defined in openTask(key)
  * @param {string} key - task key
  */
-function updateContent(content, task, key) {
+function updateContent(content, task, taskId) {
   content.innerHTML = "";
-  content.innerHTML += generateTaskLayer(task, key);
+  content.innerHTML += generateTaskLayer(task, taskId);
 }
 
 /**
@@ -86,7 +97,8 @@ function updateContactsHeadline() {
  * @param {string} key - task key
  * @returns the task layer HTML
  */
-function generateTaskLayer(task, key) {
+
+function generateTaskLayer(task, taskId) {
   let contacts = task.contacts || {};
   let subtasks = task.subtasks || {};
   let categoryClass = getCategoryClass(task.task_category);
@@ -95,10 +107,11 @@ function generateTaskLayer(task, key) {
 
   let userName = sessionStorage.getItem("userName");
   let contactsHTML = generateContactsInTaskLayer(task.contacts, userName);
-  let subtasksHTML = generateSubtasksInTaskLayer(subtasks, key);
+  let subtasksHTML = generateSubtasksInTaskLayer(subtasks, taskId);
 
-  return getTaskLayerHTML(task, key, categoryClass, contactsHTML, subtasksHTML);
+  return getTaskLayerHTML(task, taskId, categoryClass, contactsHTML, subtasksHTML);
 }
+
 
 /**
  * This function returns the correct task category. It is used in generateTaskLayer().
@@ -165,15 +178,10 @@ async function checkSubtask(taskKey, subtaskKey, imgElement) {
 */
 async function updateSubtaskStatus(taskKey, subtaskKey, updatedStatus) {
   try {
-    let response = await fetch(TASKS_URL + taskKey + "/subtasks/" + subtaskKey + "/completed.json", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json", },
-      body: JSON.stringify(updatedStatus),
-    });
-    await response.json();
+    await fetchWithAuth(`tasks/${taskKey}/subtasks/${subtaskKey}/`, "PATCH", { completed: updatedStatus });
     tasksData[taskKey].subtasks[subtaskKey].completed = updatedStatus;
   } catch (error) {
-    console.error("Error updating subtask status:", error);
+    console.error(" Fehler beim Aktualisieren des Subtasks:", error);
   }
 }
 

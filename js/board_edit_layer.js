@@ -2,12 +2,57 @@
    * This function is called in the task layer to switch to the edit mode.
    * @param {*} taskKey - task key
    */
-function showEditTask(taskKey) {
+window.showEditTask = async function (taskKey) {
+
+  await fetchUpdatedTaskData(taskKey);
+
   const task = tasksData[taskKey];
+
+  if (!taskKey) {
+    console.error(`Fehler: Kein Task mit der ID ${taskKey} gefunden.`);
+    return;
+  }
+
   let content = document.getElementById("show-task-inner-layer");
-  let currentHeight = content.scrollHeight;
-  content.style.height = currentHeight + "px";
   content.innerHTML = generateEditTaskLayer(task, taskKey);
+};
+
+async function fetchUpdatedTaskData(taskKey) {
+  try {
+
+    const token = localStorage.getItem("access_token");  // Token abrufen
+    if (!token) {
+      console.error("Kein Token gefunden! Benutzer ist nicht eingeloggt.");
+      return;
+    }
+    const response = await fetch(`http://127.0.0.1:8000/api/tasks/${taskKey}/`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Token ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      console.error(`API-Fehler: ${response.status} - ${response.statusText}`);
+      return;
+    }
+
+    const updatedTask = await response.json();
+
+    if (JSON.stringify(tasksData[taskKey]) === JSON.stringify(updatedTask)) {
+      return;
+    }
+
+    tasksData[taskKey] = updatedTask;
+
+    if (typeof showEditTask === "function") {
+      showEditTask(taskKey);
+    }
+
+  } catch (error) {
+    console.error("Fehler beim Laden des aktualisierten Tasks:", error);
+  }
 }
 
 /**
@@ -18,15 +63,15 @@ function showEditTask(taskKey) {
  */
 async function updateTask(key, updatedTask) {
   try {
-    let response = await fetch(TASKS_URL + key + ".json", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json", },
-      body: JSON.stringify(updatedTask),
-    });
-    return await response.json();
+    if (!updatedTask.contact_ids || updatedTask.contact_ids.length === 0) {
+      console.warn("WARNUNG: `contact_ids` ist leer! Überprüfe die Auswahl im Frontend.");
+    }
+    const response = await fetchWithAuth(`tasks/${key}/`, "PATCH", updatedTask);
+    if (response) {
+      await boardInit();
+    }
   } catch (error) {
-    console.error("Error updating task:", error);
-    throw error;
+    console.error("Fehler beim Task-Update:", error);
   }
 }
 
@@ -34,17 +79,29 @@ async function updateTask(key, updatedTask) {
  * This function executes the changes in the task edit layer and shows them.
  * @param {string} key - task key
  */
-function saveTaskChanges(key) {
-  const selectedContactsData = getSelectedContactsData();
-  const subtasksObj = getSubtasksObj();
-  const updatedTask = getUpdatedTask(selectedContactsData, subtasksObj);
+async function saveTaskChanges(key) {
+  try {
+    console.log("🔵 Vorherige Kontakte aus currentTask:", currentTask.contact_ids);
+    let contactIds = getSelectedContactIds();
 
-  updateTask(key, updatedTask)
-    .then(() => {
-      handleTaskUpdateSuccess();
-    })
-    .catch((error) => console.error("Error updating task:", error));
+    if (!Array.isArray(contactIds) || contactIds.length === 0) {
+      console.log("⚠️ contact_ids ist leer! Übernehme alte Kontakte...");
+      contactIds = currentTask.contact_ids || [];
+    }
+
+    console.log("🟢 Kontakte nach Auswahl:", contactIds);
+
+    const updatedTask = getUpdatedTask(contactIds, getSubtasksObj());
+    console.log("🔴 Kontakte in updatedTask:", updatedTask.contact_ids);
+
+    await updateTask(key, updatedTask);
+    showEditTask(key);
+  } catch (error) {
+    console.error("Fehler beim Speichern der Task-Änderungen:", error);
+  }
 }
+
+
 
 /**
  * This function updates changes in contacts of edit task layer and shows them.
@@ -52,16 +109,22 @@ function saveTaskChanges(key) {
  */
 async function saveEditContacts(key) {
   try {
-    const selectedContactsData = getSelectedContactsData();
-    const subtasksObj = getSubtasksObj();
-    const updatedTask = getUpdatedTask(selectedContactsData, subtasksObj);
+    const contact_ids = getSelectedContactIds();
+
+    if (!Array.isArray(contact_ids)) {
+      throw new Error("❌ `contact_ids` ist kein Array!");
+    }
+
+    const updatedTask = { contact_ids: contact_ids };
 
     await updateTask(key, updatedTask);
-    await boardInit();
 
-    showEditTask(currentTaskKey);
+    await fetchUpdatedTaskData(key);
+
+    setTimeout(() => showEditTask(key), 100);
+
   } catch (error) {
-    console.error("Error updating task:", error);
+    console.error("Fehler beim Speichern der Kontakte:", error);
   }
 }
 
@@ -69,14 +132,21 @@ async function saveEditContacts(key) {
  * This function filters all elements of selectedContacts which are true and returns them.
  * @returns true elements as objects
  */
-function getSelectedContactsData() {
-  return selectedContacts.reduce((acc, isSelected, index) => {
-    if (isSelected) {
-      acc[`contact${index + 1}`] = contactsArray[index];
+function getSelectedContactIds() {
+  let selectedIds = [];
+  document.querySelectorAll(".contact-checkbox").forEach(checkbox => {
+    if (checkbox.checked) {
+      selectedIds.push(parseInt(checkbox.dataset.contactId));
     }
-    return acc;
-  }, {});
+  });
+
+  console.log("🟠 `contact_ids` aus Checkboxen:", selectedIds);
+  return selectedIds;
 }
+
+
+
+
 
 /**
  * This function filters all elements of subtasks which are dependant to a specific task and returns them.
@@ -98,18 +168,27 @@ function getSubtasksObj() {
  * @param {array} subtasksObj - relevant subtasks
  * @returns updated task object
  */
-function getUpdatedTask(selectedContactsData, subtasksObj) {
+function getUpdatedTask(contactIds, subtasksObj) {
+  if (!contactIds || contactIds.length === 0) {
+    console.log("⚠️ selectedContacts ist leer, setze auf alte Werte...");
+    contactIds = currentTask.contact_ids || [];
+  }
+
   return {
     task_category: currentTask.task_category,
     board_category: currentTask.board_category,
-    contacts: selectedContactsData,
+    contact_ids: contactIds, // Hier sicherstellen, dass sie bleiben!
     subtasks: subtasksObj,
     title: document.getElementById("edit-title-input").value,
     description: document.getElementById("edit-description-input").value,
     due_date: document.getElementById("edit-date-input").value,
-    prio: getSelectedPriority(),
+    priority: getSelectedPriority(),
   };
 }
+
+
+
+
 
 /**
  * This function returns the marked prio for getUpdatedTask():
@@ -144,17 +223,17 @@ function handleTaskUpdateSuccess() {
  */
 function generateEditTaskLayer(task, key) {
   currentTask = task;
-  let contacts = task.contacts || {};
-  let taskSubtasks = task.subtasks || {};
+
+  let contacts = Array.isArray(task.contacts) ? task.contacts : [];
+  let taskSubtasks = Array.isArray(task.subtasks) ? task.subtasks : [];
   let contactsHTML = getEditContactsHTML(contacts);
   let subtasksHTML = getEditSubtasksHTML(taskSubtasks);
-
-  let highSelected = task.prio === "urgent" ? "selected-high-button" : "";
-  let highImgSrc = task.prio === "urgent" ? "add_task_img/high-white.svg" : "add_task_img/high.svg";
-  let mediumSelected = task.prio === "medium" ? "selected-medium-button" : "";
-  let mediumImgSrc = task.prio === "medium" ? "add_task_img/medium-white.svg" : "add_task_img/medium.svg";
-  let lowSelected = task.prio === "low" ? "selected-low-button" : "";
-  let lowImgSrc = task.prio === "low" ? "add_task_img/low-white.svg" : "add_task_img/low.svg";
+  let highSelected = task.priority === "urgent" ? "selected-high-button" : "";
+  let highImgSrc = task.priority === "urgent" ? "add_task_img/high-white.svg" : "add_task_img/high.svg";
+  let mediumSelected = task.priority === "medium" ? "selected-medium-button" : "";
+  let mediumImgSrc = task.priority === "medium" ? "add_task_img/medium-white.svg" : "add_task_img/medium.svg";
+  let lowSelected = task.priority === "low" ? "selected-low-button" : "";
+  let lowImgSrc = task.priority === "low" ? "add_task_img/low-white.svg" : "add_task_img/low.svg";
 
   return getEditHTML(task, key, contactsHTML, subtasksHTML, highSelected, highImgSrc, mediumSelected, mediumImgSrc, lowSelected, lowImgSrc);
 }

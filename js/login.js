@@ -57,25 +57,14 @@ function storeCredentials(email, password) {
  * 
  * @param {string} email - The authenticated user's email.
  */
-async function handleSuccess(email) {
-    console.log("✅ Login erfolgreich, leite weiter...");
+async function handleSuccess(email, username) {
 
     localStorage.setItem("userEmail", email);
+    localStorage.setItem("userName", username);
+    sessionStorage.setItem("userName", username);
     localStorage.removeItem("greetingShown");
-
-
-
     window.location.href = 'summary.html';
 }
-
-
-
-// function showError() {
-//     document.getElementById('wrongPasswordConteiner').innerHTML = 'Incorrect email or password. Try again.';
-//     document.getElementById('pasowrdConteiner').classList.add('login-red');
-// }
-
-
 
 /**
  * Displays an error message indicating incorrect password or email.
@@ -93,10 +82,6 @@ function showError() {
  * @returns {Promise<boolean>} True if authentication is successful, false otherwise.
  */
 async function validateUser(email, password) {
-    console.log("🔍 Debugging validateUser:");
-    console.log("👉 Gesendete E-Mail:", email);
-    console.log("👉 Gesendetes Passwort:", password);
-
     try {
         const response = await fetch("http://127.0.0.1:8000/api/auth/login/", {
             method: "POST",
@@ -104,25 +89,24 @@ async function validateUser(email, password) {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                email: email,  // Django erwartet `username`, aber wir senden E-Mail
+                email: email,
                 password: password
             })
         });
 
         const data = await response.json();
-        console.log("🔍 Login-Response:", data);
 
         if (response.ok && data.token) {
             localStorage.setItem("token", data.token);
-            console.log("✅ Login erfolgreich! Token gespeichert:", data.token);
-            return true;  // Wichtig! Hier wird `true` zurückgegeben
+            localStorage.setItem("userName", data.username);
+            return { success: true, username: data.username };
         } else {
-            console.error("❌ Fehler beim Login:", data);
-            showError();  // Fehleranzeige nur, wenn `response.ok` nicht stimmt
+            console.error("Fehler beim Login:", data);
+            showError();
             return false;
         }
     } catch (error) {
-        console.error("❌ Netzwerkfehler:", error);
+        console.error("Netzwerkfehler:", error);
         showError();
         return false;
     }
@@ -162,25 +146,15 @@ document.getElementById('guestLoginButton').addEventListener('click', () => {
 
 function checkLoginStatus() {
     const token = localStorage.getItem("token");
-    console.log("🔍 Überprüfung des Login-Status:", token);
 
     if (token) {
-        console.log("✅ Benutzer ist eingeloggt!");
-        document.getElementById("signinForm").style.display = "none";  // Versteckt das Login-Formular
-        document.getElementById("signupButton").innerText = "Logout";  // Ändert den Button auf "Logout"
+        document.getElementById("signinForm").style.display = "none";
+        document.getElementById("signupButton").innerText = "Logout";
         document.getElementById("signupButton").addEventListener("click", logOut);
-    } else {
-        console.log("❌ Kein Token gefunden, Benutzer ist nicht eingeloggt.");
     }
 }
 
-
-
-// Diese Funktion auf jeder Seite aufrufen!
 document.addEventListener("DOMContentLoaded", checkLoginStatus);
-
-
-
 
 /**
  * Handles the login form submission.
@@ -195,24 +169,37 @@ async function login(event) {
 
     try {
         const isAuthenticated = await validateUser(username, password);
-        if (isAuthenticated) {
-            handleSuccess(username);
+        if (isAuthenticated.success) {
+            handleSuccess(username, isAuthenticated.username);
         } else {
             showError();
         }
     } catch (error) {
-        console.error("❌ Login fehlgeschlagen:", error);
+        console.error(" Login fehlgeschlagen:", error);
         showError();
     }
 }
 
 function logOut() {
-    console.log("🔴 Logging out...");
-    sessionStorage.clear();  // Löscht alles aus sessionStorage
+    sessionStorage.clear();
     localStorage.removeItem("token");
     localStorage.removeItem("userProfile");
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("rememberMe");
+    localStorage.removeItem("email");
+    localStorage.removeItem("password");
+
+    if (document.getElementById("loginEmail")) {
+        document.getElementById("loginEmail").value = "";
+    }
+    if (document.getElementById("loginPassword")) {
+        document.getElementById("loginPassword").value = "";
+    }
+
     window.location.href = "index.html";
 }
+
 
 
 function guestLogin(event) {

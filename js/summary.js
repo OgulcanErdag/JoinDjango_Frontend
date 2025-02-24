@@ -241,14 +241,26 @@ document.addEventListener('DOMContentLoaded', initPage);
 /**
  * This function removes local storage item greetingShown.
  */
-function logout() {
-    console.log("🔴 Logging out...");
+function logOut() {
+    console.log("Logging out...");
 
-    // 1. Entferne Benutzerdaten
+    // Entferne alle gespeicherten Benutzerdaten
+    sessionStorage.clear();
     localStorage.removeItem("token");
     localStorage.removeItem("userProfile");
-    sessionStorage.removeItem("userName");
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("rememberMe");
+    localStorage.removeItem("email");
+    localStorage.removeItem("password");
 
-    // 2. Weiterleitung zur Login-Seite
+    // Leere eventuell vorausgefüllte Felder
+    if (document.getElementById("loginEmail")) {
+        document.getElementById("loginEmail").value = "";
+    }
+    if (document.getElementById("loginPassword")) {
+        document.getElementById("loginPassword").value = "";
+    }
+
     window.location.href = "index.html";
 }

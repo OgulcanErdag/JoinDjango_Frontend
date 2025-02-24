@@ -1,8 +1,11 @@
+
+
+
 document.addEventListener("DOMContentLoaded", function () {
   const token = localStorage.getItem("token");
 
   if (!token) {
-    console.log("🛑 Kein Token gefunden, zeige Login-Seite.");
+    // console.log("🛑 Kein Token gefunden, zeige Login-Seite.");
     const logoutButton = document.getElementById("logoutButton");
     if (logoutButton) {
       logoutButton.style.display = "none"; // Versteckt Logout-Button
@@ -173,7 +176,7 @@ function logout() {
 
 function generateInitials() {
   let content = document.getElementById("user-logo");
-  let userName = sessionStorage.getItem("userName");
+  let userName = sessionStorage.getItem("userName") || localStorage.getItem("userName");
 
   content.innerHTML = "";
 

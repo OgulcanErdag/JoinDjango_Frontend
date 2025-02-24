@@ -61,7 +61,7 @@
         </div>
         <div class="add-task-content">
             <div class="left-section">
-                
+
                 <p class="title-headline">Title<span class="span-red">*</span></p>
                 <input class="title" id="title-input" onkeyup="emptyTitle()" required type="text"
                     placeholder="Enter a title">
@@ -80,7 +80,7 @@
                 <div id="add-task-contactsHTML" class="edit-task-contacts-site">
 
                 </div>
-                
+
             </div>
 
             <div class="parting-line"></div>
@@ -94,8 +94,8 @@
                 <div class="buttons">
                     <button id="highButton" onclick="highButton()" class="prio-buttons">Urgent <img id="highButtonImg"
                             src="add_task_img/high.svg"></button>
-                    <button id="mediumButton" onclick="mediumButton()" class="prio-buttons">Medium <img id="mediumButtonImg"
-                            src="add_task_img/medium.svg"></button>
+                    <button id="mediumButton" onclick="mediumButton()" class="prio-buttons">Medium <img
+                            id="mediumButtonImg" src="add_task_img/medium.svg"></button>
                     <button id="lowButton" onclick="lowButton()" class="prio-buttons">Low <img id="lowButtonImg"
                             src="add_task_img/low.svg"></button>
                 </div>
@@ -112,13 +112,15 @@
 
                 <p class="subtasks">Subtasks</p>
                 <div class="subtask-layout">
-                    <input placeholder="add new subtask" onclick="newSubtask()" id="subtask-field" class="subtasks-field">
+                    <input placeholder="add new subtask" onclick="newSubtask()" id="subtask-field"
+                        class="subtasks-field">
                     <div class="d-none" id="edit-subtask"></div>
-                    <img onclick="newSubtask()" id="subtask-plus" class="subtask-plus" src="add_task_img/plus.svg" alt="">
+                    <img onclick="newSubtask()" id="subtask-plus" class="subtask-plus" src="add_task_img/plus.svg"
+                        alt="">
                 </div>
                 <div id="subtask-required"></div>
                 <div class="create-subtask" id="create-subtask"></div>
-                
+
             </div>
         </div>
         <div class="add-task-bottom">
@@ -137,15 +139,16 @@
 
             <div class="bottom-buttons">
                 <button onclick="clearTask()" class="clear-button">Clear <img src="add_task_img/x.svg" alt=""></button>
-                <button id="create-task" onclick="createTask()" class="create-task-button">Create Task <img
-                        src="add_task_img/check-white.svg" alt=""></button>
+                <button id="create-task" onclick="createTask('to-do')" class="create-task-button">
+                    Create Task <img src="add_task_img/check-white.svg" alt="">
+                </button>
             </div>
         </div>
     </div>
     <div id="added-to-board">
         <img id="addedBoardImg" src="./add_task_img/Added to board.svg" alt="">
     </div>
-
+    <script src="js/api.js"></script>
     <script src="script.js"></script>
     <script src="js/getHTML.js"></script>
     <script src="js/add_task.js"></script>

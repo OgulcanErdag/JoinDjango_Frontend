@@ -11,20 +11,26 @@
  * @param {number} progressPercentage - totalSubtasks/completedSubtasks
  * @returns code for the task cards on board.html
  */
-function getTaskOnBoardHTML(key, categoryClass, task, i, contactsHTML, prioSrc, totalSubtasks, completedSubtasks, progressPercentage) {
-    let truncatedDescription = truncateDescription(task.description, 50);
+
+function getTaskOnBoardHTML(key, categoryClass, task, i, contactsHTML, prioSrc = "", totalSubtasks, completedSubtasks, progressPercentage) {
+    let truncatedDescription = truncateDescription(task.description || "", 50);
 
     return `
-          <div onclick="openTask('${key}')" draggable="true" ondragstart="startDragging('${key}')" class="task-on-board" data-key="${key}">
-          
-              <div class="task-on-board-category ${categoryClass}">${task.task_category}</div>
-               <button class="move-up" onclick="event.stopPropagation(); moveTask('up', '${key}')">↑</button>
-               <button class="move-down" onclick="event.stopPropagation(); moveTask('down', '${key}')">↓</button>
-              <div class="task-on-board-headline">${task.title}</div>
-              <div class="task-on-board-text">${truncatedDescription}</div>
-              ${totalSubtasks > 0
-            ? `
-                  <div class="task-on-board-subtasks">
+        <div onclick="openTask(${task?.id || 'undefined'})"  // Task-ID prüfen
+             draggable="true" 
+             ondragstart="startDragging(${key}, ${task?.id || 'undefined'})" 
+             class="task-on-board" 
+             data-key="${key}" 
+             data-id="${task?.id || 'undefined'}">
+
+            <div class="task-on-board-category ${categoryClass}">${task?.task_category}</div>
+            <button class="move-up" onclick="event.stopPropagation(); moveTask('up', ${task?.id || 'undefined'})">↑</button>
+            <button class="move-down" onclick="event.stopPropagation(); moveTask('down', ${task?.id || 'undefined'})">↓</button>
+            <div class="task-on-board-headline">${task?.title}</div>
+            <div class="task-on-board-text">${truncatedDescription}</div>
+
+            ${totalSubtasks > 0 ? `
+                <div class="task-on-board-subtasks">
                       <div class="progress-bar-container">
                           <div class="progress-bar" style="width: ${progressPercentage}%;"></div>
                       </div>
@@ -33,13 +39,12 @@ function getTaskOnBoardHTML(key, categoryClass, task, i, contactsHTML, prioSrc, 
             : ""
         }
               <div class="task-on-board-lastrow">
-                  <div class="task-on-board-contacts" id="task-on-board-contacts${i}">
-                      ${contactsHTML}
-                  </div>
-                  <img src="${task.prio ? `add_task_img/${task.prio}.svg` : "add_task_img/medium.svg"}" 
-     alt="Priority" class="task-on-board-relevance">
-              </div>
-          </div>
+                   <div class="task-on-board-contacts" id="task-on-board-contacts${i}">
+                       ${contactsHTML}
+                   </div>
+                   <img src="${prioSrc}" alt="prio" class="task-on-board-relevance">
+               </div>
+           </div>
       `;
 }
 
@@ -79,8 +84,8 @@ function getTaskLayerHTML(task, key, categoryClass, contactsHTML, subtasksHTML) 
               </div>
               <div class="show-task-text-rows">
                   <p class="show-task-characteristic">Priority:</p>
-                  <p>${task.prio ? capitalize(task.prio) : "Medium"}</p>
-<img src="./add_task_img/${task.prio ? task.prio : "medium"}.svg" alt="">
+                  <p>${task.priority ? capitalize(task.priority) : "Medium"}</p>
+                    <img src="./add_task_img/${task.priority ? task.priority : "medium"}.svg" alt="">
               </div>
               <div id="assigned-headline" class="show-task-text-rows pb8 mt12">
                   <p class="show-task-characteristic">Assigned To:</p>
@@ -398,7 +403,14 @@ function getContactHTMLInAddTaskLayer(contact) {
  * @returns HTML of with a bubble including the rest contacts, if there are more than four.
  */
 function getRestAddContacts(contactCount) {
-    contactCount = selectedContacts.filter((contact) => contact === true).length;
+
+    if (!Array.isArray(selectedContacts)) {
+        selectedContacts = Object.keys(selectedContacts)
+            .filter(key => selectedContacts[key] === true)
+            .map(Number);
+    }
+
+    contactCount = selectedContacts.length;
     if (contactCount > 4) {
         let remainingContacts = contactCount - 4;
         return `
@@ -409,6 +421,7 @@ function getRestAddContacts(contactCount) {
     }
     return "";
 }
+
 
 /**
  * This function retruns the code for the contact bubbles in the task cards on board.html.

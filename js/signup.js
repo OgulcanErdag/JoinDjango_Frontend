@@ -7,10 +7,6 @@ function navigateBack() {
 * Add the event listener for the arrow container
 */
 document.getElementById('backArrow').addEventListener('click', navigateBack);
-
-// const app = initializeApp(firebaseConfig);
-// const database = getDatabase(app);
-
 document.addEventListener('DOMContentLoaded', init);
 
 /**
@@ -66,8 +62,6 @@ async function handleFormSubmit(event) {
     if (!validateEmail(email)) return alert('Please enter a valid email address.');
     if (password !== confirmPassword) return showPasswordError();
 
-    // signupUser(name, email, password);
-
     try {
         await signupUser(name, email, password, confirmPassword);
     } catch (error) {
@@ -114,12 +108,11 @@ async function signupUser(name, email, password, confirmPassword) {
 
     const response = await fetch("http://127.0.0.1:8000/api/auth/registration/", {
         method: "POST",
-
         headers: {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            username: sanitizedUsername,  // Ersetzter Name ohne Leerzeichen
+            username: sanitizedUsername,
             email: email,
             password: password,
             repeated_password: confirmPassword
@@ -129,18 +122,17 @@ async function signupUser(name, email, password, confirmPassword) {
     const data = await response.json();
 
     if (response.ok) {
-        console.log("✅ Registrierung erfolgreich:", data);
 
         if (data.token) {
-            localStorage.setItem("token", data.token);  // Token speichern
+            localStorage.setItem("token", data.token);
             localStorage.setItem("userProfile", JSON.stringify(data.user || {}));
             sessionStorage.setItem("userName", (data.user && data.user.username) || data.email);
         }
 
         signupSuccessfully();
     } else {
-        console.error("❌ Fehler bei der Registrierung:", data);
-        alert("Signup failed: " + (data.error || "Please try again"));
+        console.error("Fehler bei der Registrierung:", data);
+        alert("Signup failed: " + JSON.stringify(data));
     }
 }
 

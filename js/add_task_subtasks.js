@@ -166,11 +166,8 @@ function clearSubtasks() {
 * @returns {Object} An object containing the subtasks data.
 */
 function getSubtasksData() {
-  return subtasks.reduce((acc, subtask, index) => {
-    acc[`subtask${index + 1}`] = {
-      title: subtask.title,
-      completed: subtask.completed,
-    };
-    return acc;
-  }, {});
+  return subtasks.map(subtask => ({
+    title: subtask.title,
+    completed: subtask.completed
+  }));
 }

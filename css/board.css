@@ -390,6 +390,21 @@
     position: relative;
     background-color: #1fd7c1;
   }
+
+  /* .task-on-board-contact.remaining-count {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    background-color: white;
+    color: black;
+    border: 1px solid black;
+    font-size: 12px; /* Stelle sicher, dass die Zahl gut sichtbar ist */
+ */
+
   
   .show-task-subtask {
     display: flex;

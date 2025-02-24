@@ -1,21 +1,36 @@
-const TASKS_URL = "https://joindjango-default-rtdb.europe-west1.firebasedatabase.app/tasks/";
 
+const TASKS_URL = "http://127.0.0.1:8000/api/tasks/";
+
+let selectedBoardCategory = sessionStorage.getItem("selectedBoardCategory") || "to-do";
 let tasksData = {};
 let tasksArray = [];
-let tasksKeys = [];
-currentTaskKey = 0;
-currentTask = {};
-let currentBoardCategory = "";
-
+let currentTask = {};
+let currentDraggedTaskKey = null;
+let currentDraggedTaskId = null;
 /**
  * This function initializes board.html. It is implemented on body onload.
  */
 async function boardInit() {
-  await fetchTasksJson();
   await fetchDataJson();
+  await fetchTasksJson();
   createTaskOnBoard();
   checkAndAddNoTask();
   generateInitials();
+
+  setTimeout(() => {
+    addContactClickListeners();
+  }, 500);
+}
+
+
+function addContactClickListeners() {
+  let contacts = document.querySelectorAll(".task-on-board-contact");
+
+  contacts.forEach(contact => {
+    contact.addEventListener("click", () => {
+      contact.classList.toggle("selected-contact");
+    });
+  });
 }
 
 /**
@@ -23,37 +38,51 @@ async function boardInit() {
  * It saves the data first as objects, then as arrays for rendering, then the keys of the tasks, to identify them.
  * @returns false if there is an error in fetching.
  */
+
 async function fetchTasksJson() {
   try {
-    let response = await fetch(TASKS_URL + ".json");
-    let responseToJson = await response.json();
-    tasksData = responseToJson || {};
-    tasksArray = Object.values(tasksData);
-    tasksKeys = Object.keys(tasksData);
+    const data = await fetchWithAuth(TASKS_URL);
+
+    if (!data) throw new Error("❌ Keine Daten von API erhalten!");
+
+    tasksArray = Object.values(data);
+    tasksKeys = Object.keys(data);
+    tasksArray.forEach((task, index) => {
+      // console.log(`🔍 Task ${index}:`, task);
+      // console.log(`👥 Kontakte für Task ${task.id}:`, task.contacts);
+    });
+
   } catch (error) {
-    console.error("Error fetching data:", error);
-    return false;
+    console.error("❌ Fehler beim Laden der Tasks:", error);
   }
 }
 
 /**
  * This function renders the task cards in board.html. First it defines all board IDs for the different categorys. Then it clears all Boards and renders the cards.
  */
+
 function createTaskOnBoard() {
-  const boardIds = { "to-do": "to-do", "in-progress": "in-progress", "await-feedback": "await-feedback", done: "done", };
+  const boardIds = {
+    "to-do": "to-do",
+    "in-progress": "in-progress",
+    "await-feedback": "await-feedback",
+    "done": "done",
+  };
+
   clearBoards(boardIds);
 
-  for (let i = 0; i < tasksArray.length; i++) {
-    let task = tasksArray[i];
-    let key = tasksKeys[i];
+  tasksArray.forEach((task, key) => {
+    let taskId = task.id || task._id || task.task_id || "undefined";
     let contactsHTML = generateContactsHTML(task.contacts);
-    let boardId = boardIds[task.board_category] || "to-do";
+    let boardId = boardIds[task.board_category] || selectedBoardCategory;
     let content = document.getElementById(boardId);
-    let prioSrc = handlePrio(task.prio);
-    let categoryClass = task.task_category === "User Story" ? "user-story" : "technical-task";
+    let prioSrc = handlePrio(task.priority);
+    let categoryClass = task.task_category.toLowerCase().includes("user") ? "user-story" : "technical-task";
 
-    content.innerHTML += generateTaskOnBoardHTML(key, categoryClass, task, i, contactsHTML, prioSrc);
-  }
+    if (content) {
+      content.innerHTML += generateTaskOnBoardHTML(key, taskId, categoryClass, task, contactsHTML, prioSrc);
+    }
+  });
 }
 
 /**
@@ -82,7 +111,7 @@ function findTaskMobile() {
  * Same functionality as createTaskOnBoard, but for the filtered tasks by the findTask-function.
  * @param {array} filteredTasks - filtered tasks by oniput-handler in findTask().
  */
-function renderFilteredTasks(filteredTasks) {
+function renderFilteredTasks(taskId, filteredTasks) {
   const boardIds = { "to-do": "to-do", "in-progress": "in-progress", "await-feedback": "await-feedback", done: "done" };
   clearBoards(boardIds);
 
@@ -92,9 +121,22 @@ function renderFilteredTasks(filteredTasks) {
     let contactsHTML = generateContactsHTML(task.contacts);
     let boardId = boardIds[task.board_category] || "to-do";
     let content = document.getElementById(boardId);
-    let prioSrc = handlePrio(task.prio);
+    let prioSrc = handlePrio(task.priority);
     let categoryClass = task.task_category === "User Story" ? "user-story" : "technical-task";
-    content.innerHTML += generateTaskOnBoardHTML(key, categoryClass, task, i, contactsHTML, prioSrc);
+    if (!taskId || taskId === "undefined") {
+
+      if (task.id) {
+        taskId = task.id;
+      } else if (task._id) {
+        taskId = task._id;
+      } else if (task.task_id) {
+        taskId = task.task_id;
+      } else {
+        // console.error(" WARNUNG: Keine gültige ID gefunden!");
+        return "";
+      }
+    }
+    content.innerHTML += generateTaskOnBoardHTML(key, task.id, categoryClass, task, i, contactsHTML, prioSrc);
   }
   checkAndAddNoTask();
 }
@@ -117,6 +159,12 @@ function clearBoards(boardIds) {
  * @param {array} contacts - task.contacts
  * @returns HTMLs of the first four assigned contacts and the HTML with the number of the further contacts, if there are more.
  */
+/**
+ * This function displays the assigned contacts on the cards on the board by initials.
+ * @param {array} contacts - task.contacts
+ * @returns HTMLs of the first four assigned contacts and the HTML with the number of the further contacts, if there are more.
+ */
+
 function generateContactsHTML(contacts) {
   contacts = contacts || {};
   const contactCount = Object.keys(contacts).length;
@@ -148,6 +196,7 @@ function getDisplayedContactsHTML(contacts) {
   return contactsHTML;
 }
 
+
 /**
  * This function returns a HTML with the number of further contacts if there are more than four on the card on the board..
  * @param {number} contactCount - task.contacts[length]
@@ -166,12 +215,12 @@ function getRemainingContactsHTML(contactCount) {
  * @param {string} prio - task.prio
  * @returns the correct image correspondant to urgent, medium or low
  */
-function handlePrio(prio) {
-  if (prio === "urgent") {
+function handlePrio(priority) {
+  if (priority === "urgent") {
     return "/add_task_img/high.svg";
-  } else if (prio === "medium") {
+  } else if (priority === "medium") {
     return "/add_task_img/medium.svg";
-  } else if (prio === "low") {
+  } else if (priority === "low") {
     return "/add_task_img/low.svg";
   } else {
     return "/add_task_img/medium.svg";
@@ -188,13 +237,12 @@ function handlePrio(prio) {
  * @param {string} prioSrc - source of the image used for prio status
  * @returns the HTML of the task cards
  */
-function generateTaskOnBoardHTML(key, categoryClass, task, i, contactsHTML, prioSrc) {
+function generateTaskOnBoardHTML(key, taskId, categoryClass, task, contactsHTML, prioSrc) {
   let subtasks = task.subtasks || {};
   let totalSubtasks = Object.keys(subtasks).length;
   let completedSubtasks = Object.values(subtasks).filter((subtask) => subtask.completed).length;
   let progressPercentage = totalSubtasks === 0 ? 0 : (completedSubtasks / totalSubtasks) * 100;
-
-  return getTaskOnBoardHTML(key, categoryClass, task, i, contactsHTML, prioSrc, totalSubtasks, completedSubtasks, progressPercentage);
+  return getTaskOnBoardHTML(taskId, categoryClass, task, key, contactsHTML, prioSrc, totalSubtasks, completedSubtasks, progressPercentage);
 }
 
 /**
@@ -221,7 +269,7 @@ function checkAndAddNoTask() {
     if (element && element.children.length === 0) {
       const noTaskDiv = document.createElement("div");
       noTaskDiv.className = "no-task";
-      noTaskDiv.innerHTML = `No tasks ${id.replace(/-/g, " ")}`;
+      noTaskDiv.innerHTML = `No tasks in ${id.replace(/-/g, " ")}`;
       element.appendChild(noTaskDiv);
     }
   });
@@ -231,39 +279,51 @@ function checkAndAddNoTask() {
  * This function starts the dragging activity on tasks on the board.
  * @param {string} key - task key
  */
-function startDragging(key) {
-  currentDraggedTaskKey = key;
+
+function startDragging(key, taskId) {
+  if (!taskId || taskId === 0) {
+    console.error(" Fehler: Task-ID ist ungültig!", taskId);
+    return;
+  }
+  currentDraggedTaskKey = taskId;
 }
 
-/**
- * This function enables dropping an element in the board.
- * @param {event} ev
- */
 function allowDrop(ev) {
   ev.preventDefault();
   var taskArea = ev.currentTarget;
   taskArea.classList.add("hover");
 }
 
+
 /**
  * This function removes the hover-effekt during drag&drop.
  * @param {event} ev
  */
 function resetBackground(ev) {
-  var taskArea = ev.currentTarget;
-  taskArea.classList.remove("hover");
+  ev.currentTarget.classList.remove("hover");
 }
 
 /**
  * This ondrop-function changes the category of the relevant task and re-renders the board.
  * @param {string} category
  */
-async function moveTo(category, taskKey) {
-  if (taskKey) {
-    await updateTaskAttribute(taskKey, category, "board_category");
+
+async function moveTo(category, taskId) {
+  if (!taskId || taskId === 0) {
+    console.error(" Fehler: Task-ID ist ungültig!", taskId);
+    return;
+  }
+
+  try {
+    const response = await fetchWithAuth(`${TASKS_URL}${taskId}/`, "PATCH", {
+      board_category: category.toLowerCase(),
+    });
+
     await fetchTasksJson();
     createTaskOnBoard();
     checkAndAddNoTask();
+  } catch (error) {
+    console.error(" Fehler beim Verschieben des Tasks:", error);
   }
 }
 
@@ -272,10 +332,17 @@ async function moveTo(category, taskKey) {
  * @param {event} ev
  * @param {string} category - new board category
  */
-function drop(ev, category) {
-  ev.preventDefault();
-  var taskArea = ev.currentTarget;
+
+function drop(event, category) {
+  event.preventDefault();
+  var taskArea = event.currentTarget;
   taskArea.classList.remove("hover");
+
+  if (!currentDraggedTaskKey || currentDraggedTaskKey === 0) {
+    // console.error("❌ Kein gültiger Task zum Verschieben gefunden!", currentDraggedTaskKey);
+    return;
+  }
+
   moveTo(category, currentDraggedTaskKey);
 }
 
@@ -286,9 +353,9 @@ function drop(ev, category) {
  * @param {string} urlSuffix - chooses attribute
  * @returns response
  */
-async function updateTaskAttribute(key, newBoardCategory, urlSuffix) {
+async function updateTaskAttribute(taskId, newBoardCategory) {
   try {
-    let response = await fetch(TASKS_URL + key + "/" + urlSuffix + ".json", {
+    let response = await fetchWithAuth(TASKS_URL + taskId + "/", {
       method: "PUT",
       headers: { "Content-Type": "application/json", },
       body: JSON.stringify(newBoardCategory),
@@ -328,16 +395,12 @@ function moveTask(direction, taskKey) {
  * @param {object} data - empty
  * @returns response
  */
-async function postTask(path = "", data = {}) {
+async function postTask(data) {
   try {
-    let response = await fetch(TASKS_URL + path + ".json", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", },
-      body: JSON.stringify(data),
-    });
-    return await response.json();
+    await fetchWithAuth(TASKS_URL, "POST", data);
+    await boardInit();
   } catch (error) {
-    console.error("Error posting data:", error);
+    console.error("Fehler beim Erstellen des Tasks:", error);
   }
 }
 
@@ -345,16 +408,13 @@ async function postTask(path = "", data = {}) {
  * Standard function for deleting tasks on firebase.
  * @param {string} key - task key
  */
-async function deleteTask(key) {
+async function deleteTask(taskId) {
   try {
-    let response = await fetch(TASKS_URL + key + ".json", {
-      method: "DELETE",
-    });
-    await response.json();
+    await fetchWithAuth(TASKS_URL + taskId + "/", "DELETE");
     await boardInit();
     closeTask();
   } catch (error) {
-    console.error("Error deleting contact:", error);
+    console.error("Fehler beim Löschen des Tasks:", error);
   }
 }
 
@@ -365,8 +425,28 @@ async function deleteTask(key) {
  */
 function capitalize(word) {
   if (!word || typeof word !== "string") {
-    console.error("❌ Fehler in capitalize: Wort ist undefined oder kein String!", word);
+    console.error("Fehler in capitalize: Wort ist undefined oder kein String!", word);
     return "Unbekannt";  // Standardwert setzen
   }
   return word.charAt(0).toUpperCase() + word.slice(1);
+}
+
+function logOut() {
+  sessionStorage.clear();
+  localStorage.removeItem("token");
+  localStorage.removeItem("userProfile");
+  localStorage.removeItem("userEmail");
+  localStorage.removeItem("userName");
+  localStorage.removeItem("rememberMe");
+  localStorage.removeItem("email");
+  localStorage.removeItem("password");
+
+  if (document.getElementById("loginEmail")) {
+    document.getElementById("loginEmail").value = "";
+  }
+  if (document.getElementById("loginPassword")) {
+    document.getElementById("loginPassword").value = "";
+  }
+
+  window.location.href = "index.html";
 }

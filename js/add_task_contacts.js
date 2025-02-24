@@ -2,7 +2,7 @@
  * Resets the selected contacts array to all false values.
  */
 function resetSelectedContacts() {
-  selectedContacts = new Array(contactsArray.length).fill(false);
+  selectedContacts = {};
 }
 
 /**
@@ -19,8 +19,30 @@ function showContactsInAddTask() {
 
   let content = document.getElementById("add-task-contacts");
   content.innerHTML = contactsAddTask;
-  checkbox();
+
+  updateCheckboxStates();
 }
+
+function updateCheckboxStates() {
+  contactsArray.forEach((contact, i) => {
+    let checkboxField = document.getElementById(`checkbox-field${i}`);
+    let checkboxImg = document.getElementById(`checkbox-img-${i}`);
+
+    if (!checkboxField || !checkboxImg) {
+      // console.warn(`WARNUNG: Checkbox oder Bild für Kontakt ${i} nicht gefunden!`);
+      return;
+    }
+
+    if (selectedContacts[i]) {
+      checkboxField.checked = true;
+      checkboxImg.src = "add_task_img/checkbox-normal-checked-white.svg";
+    } else {
+      checkboxField.checked = false;
+      checkboxImg.src = "add_task_img/checkbox-normal.svg";
+    }
+  });
+}
+
 
 /**
  * Updates the checkbox status and highlights the selected contacts in the "Add Task" section.
@@ -28,9 +50,14 @@ function showContactsInAddTask() {
  * checkbox image and highlights the contact if selected.
  */
 function checkbox() {
-  contactsArray.forEach((contact, i) => {
-    let checkboxField = document.getElementById(`checkbox-field${i}`);
-    let contactDiv = document.getElementById(`contacts-pos${i}`);
+  contactsArray.forEach((contact) => { // Nutze "contact.id" statt "i"
+    let checkboxField = document.getElementById(`checkbox-field${contact.id}`);
+    let contactDiv = document.getElementById(`contacts-pos${contact.id}`);
+
+    if (!checkboxField || !contactDiv) {
+      console.warn(` Checkbox oder Kontakt-Div nicht gefunden für ID: ${contact.id}`);
+      return;
+    }
 
     if (checkboxField.src.includes("checkbox-normal-checked.svg")) {
       checkboxField.src = "add_task_img/checkbox-normal-checked-white.svg";
@@ -38,6 +65,7 @@ function checkbox() {
     }
   });
 }
+
 
 /**
 * Toggles the display of the contacts dropdown and shows the contacts in the add task section.
@@ -126,28 +154,36 @@ function showContactsInEdit() {
  * @param {number} i - Index of the contact to be checked.
  */
 function checkContacts(i) {
-  let checkboxField = document.getElementById(`checkbox-field${i}`);
-  let contactDiv = document.getElementById(`contacts-pos${i}`);
+  let checkbox = document.getElementById(`checkbox-field${i}`);
+  let checkboxImg = document.getElementById(`checkbox-img-${i}`);
 
-  if (checkboxField.src.includes("checkbox-normal.svg")) {
-    checkboxField.src = "add_task_img/checkbox-normal-checked-white.svg";
-    contactDiv.classList.add("contacts-pos-highlight");
-    selectedContacts[i] = true;
-  } else {
-    checkboxField.src = "add_task_img/checkbox-normal.svg";
-    contactDiv.classList.remove("contacts-pos-highlight");
-    contactDiv.classList.remove("no-hover");
-    selectedContacts[i] = false;
+  if (!checkbox || !checkboxImg) {
+    console.warn(`Checkbox oder Bild für Kontakt ${i} nicht gefunden!`);
+    return;
   }
+
+  checkbox.checked = !checkbox.checked;
+  selectedContacts[i] = checkbox.checked;
+  checkboxImg.src = checkbox.checked
+    ? "add_task_img/checkbox-normal-checked-white.svg"
+    : "add_task_img/checkbox-normal.svg";
+
+  console.log("Aktuelle Auswahl:", selectedContacts);
 }
 
 /**
  * Clears the selected contacts and resets the contact checkboxes in the add task section.
  */
 function clearContacts() {
+  console.log("📌 Alle ausgewählten Kontakte vor Clear:", selectedContacts);
+
   let content = document.getElementById("add-task-contactsHTML");
   if (!content) {
     content = document.getElementById("add-task-contactsHTML-layer");
+  }
+
+  if (selectedContacts.hasOwnProperty("0")) {
+    delete selectedContacts["0"];
   }
 
   for (let i in selectedContacts) {
@@ -155,14 +191,19 @@ function clearContacts() {
       let checkboxField = document.getElementById(`checkbox-field${i}`);
       let contactDiv = document.getElementById(`contacts-pos${i}`);
 
+      if (!checkboxField) {
+        continue;
+      }
+      if (!contactDiv) {
+        continue;
+      }
+
       checkboxField.src = "add_task_img/checkbox-normal.svg";
       contactDiv.classList.remove("contacts-pos-highlight");
       contactDiv.classList.remove("no-hover");
       selectedContacts[i] = false;
     }
   }
-
-  content.innerHTML = "";
 }
 
 /**
