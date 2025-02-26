@@ -161,9 +161,6 @@ function goToSignUp() {
 }
 
 function logout() {
-  console.log("🔴 Logging out...");
-
-  // Entferne alle Benutzerdaten
   localStorage.removeItem("token");
   localStorage.removeItem("userProfile");
   sessionStorage.removeItem("userName");

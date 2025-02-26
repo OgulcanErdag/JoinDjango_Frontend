@@ -55,7 +55,7 @@ function checkbox() {
     let contactDiv = document.getElementById(`contacts-pos${contact.id}`);
 
     if (!checkboxField || !contactDiv) {
-      console.warn(` Checkbox oder Kontakt-Div nicht gefunden für ID: ${contact.id}`);
+      // console.warn(` Checkbox oder Kontakt-Div nicht gefunden für ID: ${contact.id}`);
       return;
     }
 
@@ -158,7 +158,7 @@ function checkContacts(i) {
   let checkboxImg = document.getElementById(`checkbox-img-${i}`);
 
   if (!checkbox || !checkboxImg) {
-    console.warn(`Checkbox oder Bild für Kontakt ${i} nicht gefunden!`);
+    // console.warn(`Checkbox oder Bild für Kontakt ${i} nicht gefunden!`);
     return;
   }
 
@@ -167,16 +167,12 @@ function checkContacts(i) {
   checkboxImg.src = checkbox.checked
     ? "add_task_img/checkbox-normal-checked-white.svg"
     : "add_task_img/checkbox-normal.svg";
-
-  console.log("Aktuelle Auswahl:", selectedContacts);
 }
 
 /**
  * Clears the selected contacts and resets the contact checkboxes in the add task section.
  */
 function clearContacts() {
-  console.log("📌 Alle ausgewählten Kontakte vor Clear:", selectedContacts);
-
   let content = document.getElementById("add-task-contactsHTML");
   if (!content) {
     content = document.getElementById("add-task-contactsHTML-layer");

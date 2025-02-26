@@ -314,7 +314,6 @@ function getSelectedContactIds() {
  */
 async function createTask(boardCategory) {
   try {
-
     if (!boardCategory) {
       throw new Error("❌ Fehler: boardCategory ist nicht gesetzt!");
     }
@@ -332,32 +331,23 @@ async function createTask(boardCategory) {
       title: document.getElementById("title-input").value,
     };
 
-    const response = await fetch("http://127.0.0.1:8000/api/tasks/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Token ${localStorage.getItem("token")}`,
-      },
-      body: JSON.stringify(newTask),
-    });
+    const response = await fetchWithAuth("tasks/", "POST", newTask);
 
-    if (!response.ok) {
-      throw new Error(`❌ Fehler beim Erstellen des Tasks: ${response.statusText}`);
+    if (!response || response.error) {
+      throw new Error(`❌ Fehler beim Erstellen des Tasks: ${response?.error || "Unbekannter Fehler"}`);
     }
-
-    const createdTask = await response.json();
 
     await addedToBoard();
     await boardInit();
     clearTask();
     setTimeout(() => {
-      document.getElementById("added-to-board").classList.remove("animate");  // ❌ Meldung ausblenden
+      document.getElementById("added-to-board").classList.remove("animate");
     }, 1000);
-
   } catch (error) {
-    console.error("Fehler in createTask:", error);
+    console.error("❌ Fehler in createTask:", error);
   }
 }
+
 
 
 

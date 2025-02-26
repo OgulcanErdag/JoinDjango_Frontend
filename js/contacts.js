@@ -30,31 +30,30 @@ function getInitials(name) {
  */
 async function fetchDataJson() {
   const token = localStorage.getItem("token");
-
-  if (!token) {
-    console.error("❌ Kein Token gefunden! Zugriff verweigert.");
-    return;
+  let headers = {
+    "Content-Type": "application/json",
+  };
+  if (token) {
+    headers["Authorization"] = `Token ${token}`;
+  } else {
+    // console.warn("Kein Token vorhanden! Gast-Modus wird verwendet.");
   }
   try {
     let response = await fetch("http://127.0.0.1:8000/api/contacts/", {
       method: "GET",
-      headers: {
-        "Authorization": `Token ${token}`,
-        "Content-Type": "application/json"
-      }
+      headers: headers,
     });
-
     if (!response.ok) {
-      throw new Error(`❌ Fehler beim Laden der Kontakte: ${response.status}`);
+      throw new Error(`Fehler beim Laden der Kontakte: ${response.status}`);
     }
-
     let data = await response.json();
     contactsData = data;
     contactsArray = Object.values(data);
   } catch (error) {
-    console.error("❌ Netzwerkfehler beim Laden der Kontakte:", error);
+    console.error(" Netzwerkfehler beim Laden der Kontakte:", error);
   }
 }
+
 
 
 /**
@@ -127,29 +126,25 @@ async function addContact() {
   let email = document.getElementById("add-contact-mail").value;
   let phone = document.getElementById("add-contact-phone").value;
   let color = getRandomColor();
-  let token = localStorage.getItem("token");
   let newContact = { name, email, phone, color };
 
   try {
-    let response = await fetch(CONTACTS_API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Token ${token}` // 🔥 Auth-Header hinzufügen
-      },
-      body: JSON.stringify(newContact),
-    });
+    // ✅ fetchWithAuth() nutzen, damit Gäste `guest_id` mitsenden
+    let response = await fetchWithAuth("contacts/", "POST", newContact);
 
-    if (!response.ok) {
+    if (!response || response.error) {
       throw new Error("Fehler beim Erstellen des Kontakts.");
     }
+
+    console.log("✅ Kontakt erfolgreich erstellt:", response);
 
     await contactsInit();
     contactAdded(newContact);
   } catch (error) {
-    console.error("Fehler beim Erstellen des Kontakts:", error);
+    console.error("❌ Fehler beim Erstellen des Kontakts:", error);
   }
 }
+
 
 /**
  * This function handles the actions if a new contact has been added successfully.

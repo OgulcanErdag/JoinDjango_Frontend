@@ -104,7 +104,7 @@ function validateEmail(email) {
  * @param {string} password - The user's password.
  */
 async function signupUser(name, email, password, confirmPassword) {
-    const sanitizedUsername = name.replace(/ /g, "_");  // Leerzeichen durch _ ersetzen
+    const sanitizedUsername = name.replace(/ /g, "_");
 
     const response = await fetch("http://127.0.0.1:8000/api/auth/registration/", {
         method: "POST",
@@ -147,9 +147,11 @@ function signupSuccessfully() {
 
     setTimeout(function () {
         successMessage.classList.remove('show');
+        localStorage.removeItem("token");
+        localStorage.removeItem("userProfile");
+        sessionStorage.removeItem("userName");
         window.location.href = 'index.html';
-    }, 3000);
+    }, 2000);
 };
-
 window.toggleCheckboxImage = toggleCheckboxImage;
 window.signupUser = signupUser;

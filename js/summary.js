@@ -61,7 +61,7 @@ function counter(category) {
  * @returns number of urgent tasks
  */
 function countUrgentTasks() {
-    return tasksArray.filter(task => task.prio === 'urgent').length;
+    return tasksArray.filter(task => task.priority === 'urgent').length;
 }
 
 /**
@@ -81,12 +81,10 @@ function generateGreets() {
     let userName = sessionStorage.getItem("userName");
 
     if (!userName || userName === "undefined") {
-        console.warn("⚠️ Benutzername nicht gefunden, lade neu...");
-        getUserProfile();  // 🔥 Profil erneut laden
+        // console.warn("⚠️ Benutzername nicht gefunden, lade neu...");
+        getUserProfile();
         userName = "Guest";
     }
-
-    console.log("🔍 Generierte Begrüßung für:", userName);
 
     let content = document.getElementById('greeting-container');
     content.innerHTML = `<span class="greet-text">Good ${greetingTime},</span>
@@ -96,46 +94,47 @@ function generateGreets() {
 
 async function getUserProfile() {
     const token = localStorage.getItem("token");
+
     if (!token) {
-        console.error("❌ Kein Token gefunden, bitte einloggen!");
-        return;
+        // console.warn("⚠️ Kein Token gefunden. Gast-Modus aktiv.");
+        sessionStorage.setItem("userName", "Guest");
+        return { guest: true };
     }
 
     try {
         const response = await fetch("http://127.0.0.1:8000/api/auth/profiles/", {
             method: "GET",
             headers: {
-                "Authorization": `Token ${token}`
+                "Authorization": `Token ${token}`,
+                "Content-Type": "application/json"
             }
         });
 
+        if (!response.ok) {
+            throw new Error(`❌ API-Fehler: ${response.status}`);
+        }
+
         const data = await response.json();
-        console.log("📌 API Antwort von /profiles/:", data);
+        // console.log("📌 API Antwort von /profiles/:", data);
 
         if (data.length > 0) {
             let userProfile = data[0];
             let userName = userProfile.username || userProfile.email;
-
-            // 🔥 Falls username "Anika_Koray" ist, ersetze "_" mit Leerzeichen
-            userName = userName.split("_")[0];
-
-            console.log("👤 Gefundener Benutzername:", userName);  // Debugging
-
-            // Speichern in LocalStorage & SessionStorage
+            userName = userName.replace(/_/g, " ");
+            userName = userName.split(" ")[0];
             localStorage.setItem("userProfile", JSON.stringify(userProfile));
             sessionStorage.setItem("userName", userName);
-
-            console.log("✅ sessionStorage userName gesetzt:", sessionStorage.getItem("userName"));
+            showGreeting();
+            return userProfile;
         } else {
-            console.warn("⚠️ Kein Benutzerprofil gefunden.");
+            // console.warn("⚠️ Kein Benutzerprofil gefunden.");
+            return null;
         }
     } catch (error) {
-        console.error("❌ Netzwerkfehler beim Laden des Profils:", error);
+        // console.error("❌ Netzwerkfehler beim Laden des Profils:", error);
+        return null;
     }
 }
-
-
-
 window.getUserProfile = getUserProfile;
 
 
@@ -242,7 +241,7 @@ document.addEventListener('DOMContentLoaded', initPage);
  * This function removes local storage item greetingShown.
  */
 function logOut() {
-    console.log("Logging out...");
+    // console.log("Logging out...");
 
     // Entferne alle gespeicherten Benutzerdaten
     sessionStorage.clear();

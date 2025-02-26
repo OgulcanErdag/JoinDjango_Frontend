@@ -64,7 +64,7 @@ async function fetchUpdatedTaskData(taskKey) {
 async function updateTask(key, updatedTask) {
   try {
     if (!updatedTask.contact_ids || updatedTask.contact_ids.length === 0) {
-      console.warn("WARNUNG: `contact_ids` ist leer! Überprüfe die Auswahl im Frontend.");
+      // console.warn("WARNUNG: `contact_ids` ist leer! Überprüfe die Auswahl im Frontend.");
     }
     const response = await fetchWithAuth(`tasks/${key}/`, "PATCH", updatedTask);
     if (response) {
@@ -81,18 +81,18 @@ async function updateTask(key, updatedTask) {
  */
 async function saveTaskChanges(key) {
   try {
-    console.log("🔵 Vorherige Kontakte aus currentTask:", currentTask.contact_ids);
+
     let contactIds = getSelectedContactIds();
 
     if (!Array.isArray(contactIds) || contactIds.length === 0) {
-      console.log("⚠️ contact_ids ist leer! Übernehme alte Kontakte...");
+
       contactIds = currentTask.contact_ids || [];
     }
 
-    console.log("🟢 Kontakte nach Auswahl:", contactIds);
+
 
     const updatedTask = getUpdatedTask(contactIds, getSubtasksObj());
-    console.log("🔴 Kontakte in updatedTask:", updatedTask.contact_ids);
+
 
     await updateTask(key, updatedTask);
     showEditTask(key);
@@ -140,7 +140,7 @@ function getSelectedContactIds() {
     }
   });
 
-  console.log("🟠 `contact_ids` aus Checkboxen:", selectedIds);
+
   return selectedIds;
 }
 
@@ -170,7 +170,7 @@ function getSubtasksObj() {
  */
 function getUpdatedTask(contactIds, subtasksObj) {
   if (!contactIds || contactIds.length === 0) {
-    console.log("⚠️ selectedContacts ist leer, setze auf alte Werte...");
+
     contactIds = currentTask.contact_ids || [];
   }
 
