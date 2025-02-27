@@ -169,41 +169,43 @@ function contactAdded(newContact) {
 async function deleteContact(id) {
   let token = localStorage.getItem("token");
 
+  let headers = {};
+  if (token) {
+    headers["Authorization"] = `Token ${token}`;
+  }
+
   try {
     let response = await fetch(`${CONTACTS_API_URL}${id}/`, {
       method: "DELETE",
-      headers: {
-        "Authorization": `Token ${token}`
-      }
+      headers: headers
     });
 
     if (!response.ok) {
       throw new Error("Fehler beim Löschen des Kontakts.");
     }
 
-    // ❌ Entferne Kontakt aus dem lokalen Array
     contactsArray = contactsArray.filter(contact => contact.id !== id);
 
-    // ❌ Entferne Kontakt aus der UI (linke Liste)
     let contactElement = document.getElementById(`contact${id}`);
     if (contactElement) {
       contactElement.remove();
     }
     await contactsInit();
 
-    // ❌ Detailansicht (rechte Seite) ausblenden
     let detailView = document.getElementById("contact-profile");
     if (detailView) {
-      detailView.innerHTML = ""; // Alternativ: detailView.style.display = "none";
+      detailView.innerHTML = "";
     }
 
-    // 🔄 Die gesamte Kontaktliste NEU generieren
     createContactsList();
-
+    window.location.reload();
   } catch (error) {
     console.error("❌ Fehler beim Löschen des Kontakts:", error);
   }
 }
+
+
+
 
 
 
